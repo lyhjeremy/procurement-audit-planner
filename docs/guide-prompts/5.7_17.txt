@@ -1,0 +1,1 @@
+Run the agent team for the audit planning pack, following the lead procedure in CLAUDE.md: check the gate, spawn planner, challenger and qa-reviewer as teammates from their files in .claude/agents, let them work through the challenge rounds and the QA checks, shut them down when all three report done, and report for sign-off.

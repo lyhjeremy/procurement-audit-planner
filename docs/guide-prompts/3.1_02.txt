@@ -1,0 +1,5 @@
+Before writing the spend-analyst, study its inputs using aggregates only:
+- the spend workbooks: header row per file, date type, how many rows have a redacted supplier, the Narrative and Expenditure category values;
+- contracts.csv: rows for the council, date range, how the supplier field is packed, and how many notices are still live during the spend months.
+
+Then dry-run a supplier-name match between spend suppliers above £25,000 annualised and the council's notices, and tell me what share matches. Don't write the agent yet.

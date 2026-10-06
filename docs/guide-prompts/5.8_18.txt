@@ -1,0 +1,1 @@
+Show me outputs/review.md and the points marked for the auditor at the end of outputs/challenges.md. If the verdict is READY FOR SIGN-OFF, record my sign-off in review.md: name <your name>, today's date, decision sign off.

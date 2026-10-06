@@ -1,0 +1,1 @@
+Run the risk-assessor again. Apply the decisions in outputs/auditor-comments.md and mark the register as a revision.

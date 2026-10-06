@@ -1,0 +1,10 @@
+Build the risk-assessment skill described in CLAUDE.md. First look at the real structure of outputs/analytics.json and outputs/history.json, so citations can point at paths and IDs that exist. Design:
+- The agent writes its judgments to outputs/risk-ratings.json. Justifications cite sources with tags like [rule:ID], [metric:$.path.in.analytics] and [history:ID], and every figure is a {{$.path}} placeholder, never a typed number.
+- build_register.py, next to SKILL.md, resolves every citation, fills every placeholder from analytics.json, computes the score, matrix label and band from the council's matrix in history.json, and drops any risk whose likelihood or impact justification has no resolvable citation.
+- It also checks that a repeat-finding uplift cites an audit with an adverse opinion, warns when a figure is typed in prose, and renders outputs/risk-register.md ending with an "Auditor decisions" section.
+- It also writes outputs/auditor-comments.md, the auditor's decision template: one row per rated risk with blank Decision and Comment cells. Decisions already in that file are kept when it is rewritten.
+- On a re-run after the gate, it reads those decisions and the agent's "revision" block in risk-ratings.json, writes a revision header naming what changed, marks any auditor override, and fails if a decision was left unapplied or something changed that the auditor did not ask for.
+- Include a likelihood rubric so two runs rate the same evidence the same way.
+- Where the scoring method contains conflicting thresholds, use one, mark the other, and say so in the register header. Never resolve it silently.
+
+Test the builder on a fixture with one good risk and one broken risk.

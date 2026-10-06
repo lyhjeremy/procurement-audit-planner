@@ -1,0 +1,1 @@
+Check three items from outputs/history.json against the PDFs by rendering their pages as images: one audit opinion, one entry of the impact scale, and one risk band.

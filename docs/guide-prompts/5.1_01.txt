@@ -1,0 +1,1 @@
+In outputs/auditor-comments.md, record approve for every risk whose Decision is still blank, then run the risk-assessor again to apply the decisions.

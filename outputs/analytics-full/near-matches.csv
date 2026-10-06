@@ -1,0 +1,10 @@
+supplier_norm,match_class,candidate,score,rule,spend_total_gbp,annualised estimate
+BAILEYS OF NEWBURY,near_contain,BAILEYS COACHES,0.606,single distinctive token unique on both sides,68206.35,272825.4
+D J TRAVEL,near_ratio,DJ TRAVEL,0.947,SequenceMatcher ratio >= 0.85,67966.91,271867.64
+GLEN CLEANING COMPANY,near_contain,GLEN CLEANING,0.765,single distinctive token unique on both sides,92393.12,369572.48
+HDS EXPRESS TRANSPORT,near_contain,SCHOOL EXPRESS,0.649,single distinctive token unique on both sides,1041.6,4166.4
+KENNET AND AVON GROUP,near_contain,KENNET AND AVON CARS,0.829,"distinctive token subset, >= 2 tokens",11735.0,46940.0
+POTTINGER S HIRE SERVICE,near_ratio,POTTINGERS HIRE SERVICES,0.958,SequenceMatcher ratio >= 0.85,9352.5,37410.0
+S RICHARDS T AS K RICKETTS AND S RICHARDS TAXIS,near_contain,K RICKETTS AND S RICHARDS,0.795,"distinctive token subset, >= 2 tokens",17144.0,68576.0
+SDK ENVIRONMENTAL,near_ratio,SMS ENVIRONMENTAL,0.882,SequenceMatcher ratio >= 0.85,3095.0,12380.0
+SWAN ADVOCACY,near_contain,SWAN ADVOCACY NETWORK,0.765,"distinctive token subset, >= 2 tokens",51216.0,204864.0

@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Procurement Audit Planner</title>
+<meta name="description" content="An agent harness that plans an internal audit of West Berkshire Council procurement from public data, with a human approval gate and sign-off.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<style>
+:root {
+  --paper: #eef1ee; --sheet: #fbfcfb; --ink: #1f2a2e; --muted: #5b6a6e; --rule: #c9d1cc;
+  --tick: #b3261e; --pencil: #2f4a6d; --wait: #8a6d1d; --wash: #e3e9e4;
+  --sans: "IBM Plex Sans", system-ui, sans-serif; --serif: "Source Serif 4", Georgia, serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #161b1c; --sheet: #1d2426; --ink: #e4e9e7; --muted: #9aa8a6; --rule: #34403f;
+    --tick: #ef6b5f; --pencil: #8fb2db; --wait: #d6b45a; --wash: #232c2d;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #161b1c; --sheet: #1d2426; --ink: #e4e9e7; --muted: #9aa8a6; --rule: #34403f;
+  --tick: #ef6b5f; --pencil: #8fb2db; --wait: #d6b45a; --wash: #232c2d;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.55 var(--sans); }
+a { color: var(--pencil); }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--pencil); outline-offset: 2px; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 16px; }
+
+header.top { padding: 28px 0 20px; border-bottom: 1px solid var(--rule); }
+.top h1 { font: 600 26px/1.2 var(--serif); margin: 0 0 6px; letter-spacing: -0.01em; }
+.top p { margin: 0; color: var(--muted); max-width: 68ch; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 16px; }
+select, input[type=text], input[type=password], textarea {
+  background: var(--sheet); border: 1px solid var(--rule); border-radius: 4px; padding: 7px 9px; min-width: 0; }
+.btn { background: var(--ink); color: var(--sheet); border: 0; border-radius: 4px; padding: 8px 14px; font-weight: 500; cursor: pointer; }
+.btn.quiet { background: transparent; color: var(--ink); border: 1px solid var(--rule); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.note { color: var(--muted); font-size: 13px; }
+.msg { margin-top: 10px; font-size: 14px; }
+.msg.err { color: var(--tick); }
+
+main { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 28px; padding: 24px 0 60px; }
+@media (max-width: 860px) { main { grid-template-columns: 1fr; } .index { position: static !important; } }
+
+/* the file index: stages in order, with working-paper references */
+.index { position: sticky; top: 16px; align-self: start; }
+.index h2, .panel h2 { font: 600 13px/1.3 var(--sans); color: var(--muted); margin: 0 0 10px; }
+.index ol { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+.index li { display: grid; grid-template-columns: 34px 1fr 26px; gap: 8px; align-items: start;
+  padding: 10px 2px; border-bottom: 1px solid var(--rule); }
+.index .ref { font-weight: 600; color: var(--muted); font-size: 13px; padding-top: 1px; }
+.index .name { font-weight: 500; }
+.index .who { display: block; color: var(--muted); font-size: 13px; }
+.index .mark { font: 600 20px/1 var(--serif); text-align: center; }
+.index li.done .mark { color: var(--tick); transform: rotate(-8deg); }
+.index li.running .mark::after { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 50%;
+  background: var(--pencil); animation: pulse 1.2s ease-in-out infinite; }
+.index li.waiting .name { color: var(--wait); }
+.index li.failed .mark { color: var(--tick); }
+@keyframes pulse { 50% { opacity: .25; } }
+@media (prefers-reduced-motion: reduce) { .index li.running .mark::after { animation: none; } }
+.meta { margin-top: 14px; font-size: 13px; color: var(--muted); }
+.meta dt { float: left; clear: left; width: 92px; }
+.meta dd { margin: 0 0 4px 92px; color: var(--ink); overflow-wrap: anywhere; }
+
+.panel { min-width: 0; }
+.tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--rule); margin-bottom: 16px; }
+.tabs button { background: none; border: 0; border-bottom: 2px solid transparent; padding: 8px 10px; cursor: pointer; color: var(--muted); }
+.tabs button[aria-selected=true] { color: var(--ink); border-bottom-color: var(--ink); font-weight: 500; }
+
+/* activity log */
+.log { background: var(--sheet); border: 1px solid var(--rule); border-radius: 4px; max-height: 70vh; overflow: auto; }
+.ev { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 10px; padding: 7px 12px; border-bottom: 1px solid var(--wash); font-size: 13.5px; }
+.ev .who { color: var(--muted); overflow-wrap: anywhere; }
+.ev .body { white-space: pre-wrap; overflow-wrap: anywhere; }
+.ev.tool .body { color: var(--muted); }
+.ev.stage { background: var(--wash); font-weight: 600; }
+.ev.result .body { border-left: 3px solid var(--tick); padding-left: 10px; }
+.ev.error .body, .ev.tool_error .body { color: var(--tick); }
+.ev.gate { background: var(--wash); }
+.empty { padding: 28px; color: var(--muted); text-align: center; }
+
+/* gate forms are signature boxes */
+.gatebox { border: 1.5px solid var(--ink); border-radius: 2px; background: var(--sheet); padding: 18px; margin-bottom: 20px; }
+.gatebox h3 { font: 600 18px/1.3 var(--serif); margin: 0 0 4px; }
+.gatebox > p { margin: 0 0 14px; color: var(--muted); max-width: 70ch; }
+.risks { width: 100%; border-collapse: collapse; font-size: 14px; }
+.risks th { text-align: left; font-weight: 600; color: var(--muted); font-size: 13px; padding: 6px 8px; border-bottom: 1px solid var(--ink); }
+.risks td { padding: 8px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.risks td.num { white-space: nowrap; }
+.band { font-size: 13px; color: var(--muted); }
+.choice { display: flex; gap: 10px; flex-wrap: wrap; }
+.choice label { display: inline-flex; gap: 4px; align-items: center; white-space: nowrap; }
+.risks textarea { width: 100%; min-height: 34px; resize: vertical; margin-top: 6px; }
+.sign { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 16px; align-items: end; }
+.sign label { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
+@media (max-width: 640px) {
+  .risks thead { display: none; }
+  .risks tr { display: block; border-bottom: 1px solid var(--ink); padding: 6px 0; }
+  .risks td { display: block; border: 0; padding: 4px 0; }
+}
+
+/* documents read like papers */
+.doclist { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.doclist button { background: var(--sheet); border: 1px solid var(--rule); border-radius: 3px; padding: 5px 9px; cursor: pointer; font-size: 13.5px; }
+.doclist button[aria-pressed=true] { border-color: var(--ink); font-weight: 500; }
+.paper { background: var(--sheet); border: 1px solid var(--rule); padding: 28px clamp(16px, 4vw, 44px); border-radius: 2px;
+  font: 16px/1.65 var(--serif); overflow-x: auto; }
+.paper h1, .paper h2, .paper h3 { font-family: var(--serif); line-height: 1.25; }
+.paper h1 { font-size: 24px; margin-top: 0; }
+.paper p, .paper li { max-width: 78ch; }
+.paper table { border-collapse: collapse; font: 13.5px/1.45 var(--sans); margin: 12px 0; }
+.paper th, .paper td { border: 1px solid var(--rule); padding: 5px 8px; text-align: left; vertical-align: top; }
+.paper th { background: var(--wash); }
+.paper pre { background: var(--wash); padding: 12px; overflow: auto; font-size: 12.5px; line-height: 1.45; }
+.paper code { font-size: .9em; }
+.about { max-width: 72ch; }
+.about h3 { font: 600 18px/1.3 var(--serif); margin: 22px 0 6px; }
+.about p { margin: 0 0 10px; }
+footer { border-top: 1px solid var(--rule); padding: 16px 0 30px; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <h1>Procurement audit planner</h1>
+    <p>Agents read West Berkshire Council's purchasing rules, analyse every published payment over £500, fold in past audit opinions and rate the risks. An auditor approves the risks, then an agent team writes and checks the audit plan for sign-off.</p>
+    <div class="controls">
+      <label class="note" for="runsel">Run</label>
+      <select id="runsel" aria-label="Choose a run"></select>
+      <button class="btn quiet" id="newbtn" type="button">Start a new run</button>
+      <span class="note" id="capnote"></span>
+    </div>
+    <form id="newform" hidden class="controls" autocomplete="off">
+      <input type="password" id="pass" placeholder="Passcode" aria-label="Passcode" required>
+      <input type="text" id="label" placeholder="Label (optional)" aria-label="Run label" maxlength="80">
+      <button class="btn" type="submit">Start run</button>
+      <span class="note">A full run takes about 30 to 60 minutes and spends API credit.</span>
+    </form>
+    <div class="msg" id="topmsg" role="status"></div>
+  </div>
+</header>
+
+<div class="wrap">
+<main>
+  <aside class="index" aria-label="Stages">
+    <h2>Working-paper index</h2>
+    <ol id="stages"></ol>
+    <dl class="meta" id="meta"></dl>
+  </aside>
+
+  <section class="panel">
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tab-activity" aria-selected="true" data-tab="activity">Activity</button>
+      <button role="tab" id="tab-docs" aria-selected="false" data-tab="docs">Documents</button>
+      <button role="tab" id="tab-about" aria-selected="false" data-tab="about">How it works</button>
+    </div>
+    <div id="gate"></div>
+    <div data-pane="activity"><div class="log" id="log" aria-live="polite"><div class="empty">Choose a run to see what the agents did.</div></div></div>
+    <div data-pane="docs" hidden>
+      <div class="doclist" id="doclist"></div>
+      <article class="paper" id="doc"><p class="note">Pick a document.</p></article>
+    </div>
+    <div data-pane="about" hidden class="about">
+      <h3>What runs where</h3>
+      <p>Each stage is a Claude Code session started by this server through the Claude Agent SDK, in a fresh copy of the project. The sessions load the project's own <code>CLAUDE.md</code>, the skills in <code>.claude/skills</code> and the agents in <code>.claude/agents</code>, the same files used to build the system in VS Code.</p>
+      <h3>The stages</h3>
+      <p>A1 runs the <code>extract-rules</code> skill on the Contract Rules PDF and checks every quote against the page it came from. A2 runs the spend-analyst and the findings-analyst in parallel: Python computes every indicator from three months of spend, and the committee papers give past audit opinions and the council's own risk scale. A3 is the risk-assessor, which follows the <code>risk-assessment</code> skill; a builder script drops any rating it cannot trace.</p>
+      <p>A4 is the first human gate: you approve, amend or reject each risk. A5 revises the register to match. A6 is the agent team: the planner writes the plan through the <code>audit-program</code> skill, the challenger questions it, and the QA reviewer runs four check scripts. They message each other directly. A7 is your sign-off, allowed only when QA says ready.</p>
+      <h3>Rules it keeps</h3>
+      <p>The model reads and judges; Python computes every number. Quotes are checked against the PDFs. Results are indicators to investigate, never findings of wrongdoing. Missing input means stop and report.</p>
+      <h3>Limits</h3>
+      <p>Starting a run, recording decisions and signing off need the team passcode, and there is a daily cap on runs. The reference run is the build from Part A of the assignment and is read-only.</p>
+    </div>
+  </section>
+</main>
+</div>
+<footer><div class="wrap">Built from public data published by West Berkshire Council. The system produces risk indicators to investigate, never findings of wrongdoing.</div></footer>
+
+<script>
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const REFS = ["A1","A2","A3","A4","A5","A6","A7"];
+let CFG = null, RID = null, ES = null, STATE = null, DOC = null;
+
+async function api(path, opts) {
+  const r = await fetch(path, opts);
+  const body = r.headers.get("content-type")?.includes("json") ? await r.json() : await r.text();
+  if (!r.ok) throw new Error(body?.detail || body || r.statusText);
+  return body;
+}
+const post = (path, data) => api(path, {method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify(data)});
+const savedPass = () => { try { return sessionStorage.getItem("pass") || ""; } catch { return ""; } };
+const keepPass = p => { try { sessionStorage.setItem("pass", p); } catch {} };
+
+function setTab(name) {
+  document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === name));
+  document.querySelectorAll("[data-pane]").forEach(p => p.hidden = p.dataset.pane !== name);
+}
+document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => setTab(b.dataset.tab));
+
+async function loadRuns(select) {
+  CFG = await api("/api/config");
+  const runs = await api("/api/runs");
+  const sel = $("#runsel");
+  sel.innerHTML = runs.map(r => `<option value="${esc(r.id)}">${esc(r.id === "reference" ? "Reference run (Part A build)" : (r.label || r.id) + " (" + statusWord(r.status) + ")")}</option>`).join("");
+  $("#capnote").textContent = CFG.runs_enabled ? `${CFG.runs_today} of ${CFG.daily_cap} runs used today` : "New runs are turned off on this server.";
+  $("#newbtn").disabled = !CFG.runs_enabled || !!CFG.busy;
+  const want = select || RID || (runs.find(r => r.id !== "reference")?.id) || runs[0]?.id;
+  if (want) { sel.value = want; await openRun(want); }
+}
+function statusWord(s) {
+  return {running: "working", awaiting_gate: "waiting for decisions", awaiting_signoff: "waiting for sign-off",
+          signed_off: "signed off", returned: "returned to the team", failed: "stopped"}[s] || s || "";
+}
+
+async function openRun(id) {
+  RID = id; DOC = null;
+  if (ES) { ES.close(); ES = null; }
+  $("#log").innerHTML = "";
+  await refresh();
+  ES = new EventSource(`/api/runs/${encodeURIComponent(id)}/events`);
+  ES.onmessage = e => addEvent(JSON.parse(e.data));
+  ES.addEventListener("idle", () => { ES.close(); refresh(); });
+  ES.onerror = () => { ES.close(); setTimeout(refresh, 3000); };
+}
+
+async function refresh() {
+  if (!RID) return;
+  STATE = await api(`/api/runs/${encodeURIComponent(RID)}`);
+  renderStages(); renderMeta(); renderGate(); renderDocs();
+  if (STATE.status === "running") setTimeout(() => RID && STATE.status === "running" && refresh(), 8000);
+}
+
+function renderStages() {
+  const st = STATE.stages || {};
+  $("#stages").innerHTML = CFG.stages.map((s, i) => {
+    const x = st[s.id] || {}; const k = x.status || "pending";
+    const mark = k === "done" ? "✓" : k === "failed" ? "✗" : "";
+    const extra = x.seconds ? ` (${Math.max(1, Math.round(x.seconds / 60))} min)` : "";
+    return `<li class="${k}"><span class="ref">${REFS[i]}</span><span><span class="name">${esc(s.title)}</span>
+      <span class="who">${esc(s.kind)}: ${esc(s.who)}${extra}</span></span><span class="mark" aria-label="${k}">${mark}</span></li>`;
+  }).join("");
+}
+function renderMeta() {
+  const rows = [["Status", statusWord(STATE.status)], ["Started", (STATE.created || "").replace("T", " ").replace("+00:00", " UTC")],
+                ["Model", STATE.model], ["API cost", STATE.cost_usd != null ? `$${Number(STATE.cost_usd).toFixed(2)}` : ""]];
+  if (STATE.error) rows.push(["Problem", STATE.error]);
+  $("#meta").innerHTML = rows.filter(r => r[1]).map(([a, b]) => `<dt>${a}</dt><dd>${esc(b)}</dd>`).join("");
+}
+
+function addEvent(e) {
+  const log = $("#log");
+  const who = e.kind === "stage" ? REFS[CFG.stages.findIndex(s => s.id === e.stage)] || "" : (e.who || (e.kind === "gate" ? "auditor" : ""));
+  let body = e.text || "";
+  if (e.kind === "result") body = `${e.ok ? "Stage finished" : "Stage did not finish"} (${Math.round((e.seconds || 0) / 60)} min, $${(e.cost_usd || 0).toFixed(2)})\n\n${body}`;
+  if (e.kind === "prompt") body = `Prompt: ${body}`;
+  const div = document.createElement("div");
+  div.className = `ev ${e.kind}`;
+  div.innerHTML = `<span class="who">${esc(who)}</span><span class="body">${esc(body)}</span>`;
+  const atBottom = log.scrollHeight - log.scrollTop - log.clientHeight < 40;
+  log.appendChild(div);
+  if (atBottom) log.scrollTop = log.scrollHeight;
+  if (e.kind === "result" || e.kind === "gate") refresh();
+}
+
+function renderGate() {
+  const g = $("#gate");
+  if (STATE.status === "awaiting_gate" && RID !== "reference") {
+    const rows = STATE.register.map(r => `<tr data-id="${esc(r.id)}">
+      <td><strong>${esc(r.id)}</strong></td><td>${esc(r.title)}<div class="band">${esc(r.label)} on the matrix; ${esc(r.band)} band; recommended ${esc(r.scope)} of scope</div></td>
+      <td class="num">${esc(r.L)} × ${esc(r.I)} = ${esc(r.score)}</td>
+      <td><div class="choice">${["approve","amend","reject"].map(d => `<label><input type="radio" name="d-${esc(r.id)}" value="${d}" ${d === "approve" ? "checked" : ""}> ${d}</label>`).join("")}</div>
+      <textarea aria-label="Comment for ${esc(r.id)}" placeholder="For amend, say what to change. For reject, say why."></textarea></td></tr>`).join("");
+    g.innerHTML = `<form class="gatebox" id="gateform"><h3>Your decisions on the risk register</h3>
+      <p>Nothing goes further until you decide on each risk. Read the register under Documents first. Amendments and rejections need a comment; the risk-assessor then revises the register to match.</p>
+      <table class="risks"><thead><tr><th>ID</th><th>Risk</th><th>Score</th><th>Decision</th></tr></thead><tbody>${rows}</tbody></table>
+      <div class="sign"><label>Reviewer<input type="text" id="reviewer" required></label>
+      <label>Passcode<input type="password" id="gpass" value="${esc(savedPass())}" required></label>
+      <button class="btn" type="submit">Record decisions and continue</button></div><div class="msg" id="gatemsg" role="status"></div></form>`;
+    $("#gateform").onsubmit = async ev => {
+      ev.preventDefault();
+      const decisions = {};
+      g.querySelectorAll("tr[data-id]").forEach(tr => {
+        decisions[tr.dataset.id] = {decision: tr.querySelector("input:checked").value, comment: tr.querySelector("textarea").value};
+      });
+      try {
+        keepPass($("#gpass").value);
+        await post(`/api/runs/${RID}/gate`, {passcode: $("#gpass").value, reviewer: $("#reviewer").value, decisions});
+        await openRun(RID);
+      } catch (err) { $("#gatemsg").className = "msg err"; $("#gatemsg").textContent = err.message; }
+    };
+  } else if (STATE.status === "awaiting_signoff" && RID !== "reference") {
+    g.innerHTML = `<form class="gatebox" id="signform"><h3>Auditor sign-off</h3>
+      <p>The QA reviewer's verdict and checks are in review.md, and the challenger's open points are at the end of challenges.md. Sign off only if the verdict is READY FOR SIGN-OFF.</p>
+      <div class="sign"><label>Name<input type="text" id="sname" required></label>
+      <label>Decision<select id="sdec"><option>sign off</option><option>return to the team</option></select></label>
+      <label>Comment<input type="text" id="scomm"></label>
+      <label>Passcode<input type="password" id="spass" value="${esc(savedPass())}" required></label>
+      <button class="btn" type="submit">Record sign-off</button></div><div class="msg" id="signmsg" role="status"></div></form>`;
+    $("#signform").onsubmit = async ev => {
+      ev.preventDefault();
+      try {
+        keepPass($("#spass").value);
+        await post(`/api/runs/${RID}/signoff`, {passcode: $("#spass").value, name: $("#sname").value, decision: $("#sdec").value, comment: $("#scomm").value});
+        await refresh(); showDoc("review.md");
+      } catch (err) { $("#signmsg").className = "msg err"; $("#signmsg").textContent = err.message; }
+    };
+  } else g.innerHTML = "";
+}
+
+const DOC_NAMES = {"planning-memo.md": "Planning memo", "risk-control-matrix.md": "Risk-control matrix", "audit-program.md": "Audit program",
+  "risk-register.md": "Risk register", "auditor-comments.md": "Auditor decisions", "challenges.md": "Challenges", "review.md": "QA review and sign-off",
+  "rules.json": "Rules (JSON)", "analytics.json": "Spend indicators (JSON)", "history.json": "Audit history (JSON)",
+  "risk-ratings.json": "Risk ratings (JSON)", "audit-plan.json": "Audit plan (JSON)", "pack-figures.json": "Pack figures (JSON)"};
+const ORDER = Object.keys(DOC_NAMES);
+function renderDocs() {
+  const files = ORDER.filter(f => STATE.files.includes(f));
+  $("#doclist").innerHTML = files.length ? files.map(f => `<button type="button" data-f="${f}" aria-pressed="${f === DOC}">${DOC_NAMES[f]}</button>`).join("")
+    : `<span class="note">No documents yet. They appear as each stage finishes.</span>`;
+  $("#doclist").querySelectorAll("button").forEach(b => b.onclick = () => showDoc(b.dataset.f));
+  if (!DOC && files.length) showDoc(files.includes("planning-memo.md") ? "planning-memo.md" : files.includes("risk-register.md") ? "risk-register.md" : files[0], false);
+}
+async function showDoc(f, switchTab = true) {
+  DOC = f;
+  $("#doclist").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.f === f));
+  const txt = await api(`/api/runs/${encodeURIComponent(RID)}/files/${f}`);
+  $("#doc").innerHTML = f.endsWith(".json")
+    ? `<h1>${esc(DOC_NAMES[f])}</h1><pre>${esc(txt.length > 400000 ? txt.slice(0, 400000) + "\n… (truncated)" : txt)}</pre>`
+    : DOMPurify.sanitize(marked.parse(txt));
+  if (switchTab) setTab("docs");
+}
+
+$("#runsel").onchange = e => openRun(e.target.value);
+$("#newbtn").onclick = () => { $("#newform").hidden = !$("#newform").hidden; $("#pass").value = savedPass(); $("#pass").focus(); };
+$("#newform").onsubmit = async ev => {
+  ev.preventDefault();
+  const m = $("#topmsg"); m.className = "msg"; m.textContent = "Starting…";
+  try {
+    keepPass($("#pass").value);
+    const r = await post("/api/runs", {passcode: $("#pass").value, label: $("#label").value});
+    m.textContent = "Run started. The first three stages take about 20 to 40 minutes.";
+    $("#newform").hidden = true; setTab("activity"); await loadRuns(r.id);
+  } catch (err) { m.className = "msg err"; m.textContent = err.message; }
+};
+loadRuns();
+</script>
+</body>
+</html>

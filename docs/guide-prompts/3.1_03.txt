@@ -1,0 +1,12 @@
+Build the spend-analyst sub-agent described in CLAUDE.md, using what you just found in the data. Design:
+- contracts.csv is optional. Without it, the notice-based tests are skipped and recorded, and nothing else stops.
+- Cleaning finds the header row in each workbook, asserts the six expected columns, and gives every row a row_id (file and sheet row) so any flagged payment can be found in the source.
+- Exclude and log redacted suppliers, pension and statutory payments, and payments to other public bodies. Don't exclude grants: the rules treat a grant as a contract.
+- Tag every row as care or education placement, grant, agency staff, premises, or general procurement, and report results per tag.
+- Thresholds come only from rules.json. Skip any tier whose parameter is null and record why.
+- Tests: the ones listed in CLAUDE.md, plus high_value_suppliers, which always runs and lists suppliers above the quote threshold as the population to request contract evidence for.
+- Name matches that aren't exact are candidates for the auditor, never counted as matches.
+- Write outputs/analytics.json (parameters, counts, £ totals, top 20 per test), full lists in outputs/analytics-full/, and a self-check script that re-derives one flagged item per test.
+- Inspect data only with .head(), .info() and aggregates. Use indicator language only.
+
+Don't run the agent yet.

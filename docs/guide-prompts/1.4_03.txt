@@ -1,0 +1,5 @@
+First set up the tools this project needs. Create a Python virtual environment in .venv with pandas and openpyxl, and list both in requirements.txt. If pdftotext and pdfinfo (from poppler) aren't installed, install poppler with the right package manager for this computer.
+
+Then look at data/ and compare it with the Data sources table in CLAUDE.md. Inspect the files with .head(), .info() and aggregates only; never print whole tables.
+
+Report: each expected file present or missing; the real format of the spend workbooks (sheet name, which row holds the header, date type, row count); how many contracts.csv rows belong to the council; and every mismatch with CLAUDE.md. Don't change any file.

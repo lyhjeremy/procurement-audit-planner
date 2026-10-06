@@ -1,0 +1,1 @@
+Create four empty folders in this project: .claude/skills, .claude/agents, scripts and outputs.

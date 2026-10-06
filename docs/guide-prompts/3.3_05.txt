@@ -1,0 +1,10 @@
+Before building the findings-analyst, extract the text of every PDF in data/committee (plain and with -layout) and find where the audit opinions, any agreed actions, and the risk scoring method (scales, matrix, bands, appetite) actually are.
+
+Then build the findings-analyst from CLAUDE.md:
+- It records, never scores. Anything not in the papers is omitted and listed in gaps.
+- Every item has its source file, pdf_page and a copy-exact quote.
+- Tables that garble in plain text are rebuilt from the layout text.
+- Inconsistencies inside the papers are recorded as discrepancies, not resolved.
+- Write scripts/verify_history.py, which checks that every quote is on its stated page, and test it on a fixture with planted errors.
+
+Don't run the agent yet.

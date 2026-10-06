@@ -1,0 +1,32 @@
+{
+ "id": "reference",
+ "label": "Reference run (Part A build)",
+ "created": "2026-10-06T07:00:00+00:00",
+ "status": "signed_off",
+ "current": "signoff",
+ "model": "claude-opus-5-5 (Claude Code session)",
+ "cost_usd": null,
+ "stages": {
+  "rules": {
+   "status": "done"
+  },
+  "analysis": {
+   "status": "done"
+  },
+  "register": {
+   "status": "done"
+  },
+  "gate": {
+   "status": "done"
+  },
+  "revision": {
+   "status": "done"
+  },
+  "team": {
+   "status": "done"
+  },
+  "signoff": {
+   "status": "done"
+  }
+ }
+}

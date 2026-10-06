@@ -1,0 +1,26 @@
+test,item,group,row_id,source_file,sheet_row,pay_date,supplier,amount,service,narrative
+T-02.2,1,VOLKERHIGHWAYS,Over500_2026_P02_-_published.xlsx:2185,Over500_2026_P02_-_published.xlsx,2185,2026-05-20,VolkerHighways Ltd,19420.72,Environment,Private Contractors
+T-02.2,1,VOLKERHIGHWAYS,Over500_2026_P02_-_published.xlsx:723,Over500_2026_P02_-_published.xlsx,723,2026-05-05,VolkerHighways Ltd,18033.36,Environment,Payment to contractor
+T-02.2,1,VOLKERHIGHWAYS,Over500_2026_P02_-_published.xlsx:701,Over500_2026_P02_-_published.xlsx,701,2026-05-12,VolkerHighways Ltd,17896.87,Environment,Payment to contractor
+T-02.2,1,VOLKERHIGHWAYS,Over500_2026_P02_-_published.xlsx:2179,Over500_2026_P02_-_published.xlsx,2179,2026-05-19,VolkerHighways Ltd,17882.35,Environment,Private Contractors
+T-02.2,1,VOLKERHIGHWAYS,Over500_2026_P02_-_published.xlsx:2178,Over500_2026_P02_-_published.xlsx,2178,2026-05-05,VolkerHighways Ltd,16916.01,Environment,Private Contractors
+T-02.2,2,BETTER GROUP,Over500_2026_P03_-_published.xlsx:13,Over500_2026_P03_-_published.xlsx,13,2026-06-01,The Better Group Ltd,24088.98,Children's Social Care,Training
+T-02.2,2,BETTER GROUP,Over500_2026_P03_-_published.xlsx:2397,Over500_2026_P03_-_published.xlsx,2397,2026-06-01,The Better Group Ltd,22361.26,Adult Social Care,Payment to contractor
+T-02.2,2,BETTER GROUP,Over500_2026_P02_-_published.xlsx:9,Over500_2026_P02_-_published.xlsx,9,2026-05-28,The Better Group Ltd,20457.43,Adult Social Care,Training
+T-02.2,2,BETTER GROUP,Over500_2026_P02_-_published.xlsx:10,Over500_2026_P02_-_published.xlsx,10,2026-05-28,The Better Group Ltd,19605.14,Children's Social Care,Training
+T-02.2,2,BETTER GROUP,Over500_2026_P03_-_published.xlsx:2396,Over500_2026_P03_-_published.xlsx,2396,2026-06-01,The Better Group Ltd,18039.18,Adult Social Care,Payment to contractor
+T-02.2,3,NEWBURY AND DISTRICT,Over500_2026_P03_-_published.xlsx:269,Over500_2026_P03_-_published.xlsx,269,2026-06-12,Newbury & District Ltd,14852.0,Environment,Public Transport
+T-02.2,3,NEWBURY AND DISTRICT,Over500_2026_P03_-_published.xlsx:268,Over500_2026_P03_-_published.xlsx,268,2026-06-01,Newbury & District Ltd,13826.61,Environment,Public Transport
+T-02.2,3,NEWBURY AND DISTRICT,Over500_2026_P03_-_published.xlsx:274,Over500_2026_P03_-_published.xlsx,274,2026-06-30,Newbury & District Ltd,13663.85,Environment,Public Transport
+T-02.2,3,NEWBURY AND DISTRICT,Over500_2026_P03_-_published.xlsx:171,Over500_2026_P03_-_published.xlsx,171,2026-06-02,Newbury & District Ltd,10529.33,Education & SEND,Transport Hire
+T-02.2,3,NEWBURY AND DISTRICT,Over500_2026_P03_-_published.xlsx:336,Over500_2026_P03_-_published.xlsx,336,2026-06-02,Newbury & District Ltd,9861.0,Education & SEND,Transport Hire
+T-02.2,4,WEAVAWAY TRAVEL,Over500_2026_P04_-_published.xlsx:450,Over500_2026_P04_-_published.xlsx,450,2026-07-08,WEAVAWAY TRAVEL LTD,9615.23,Education & SEND,Transport Hire
+T-02.2,4,WEAVAWAY TRAVEL,Over500_2026_P04_-_published.xlsx:452,Over500_2026_P04_-_published.xlsx,452,2026-07-08,WEAVAWAY TRAVEL LTD,9483.38,Education & SEND,Transport Hire
+T-02.2,4,WEAVAWAY TRAVEL,Over500_2026_P04_-_published.xlsx:183,Over500_2026_P04_-_published.xlsx,183,2026-07-08,WEAVAWAY TRAVEL LTD,8226.54,Education & SEND,Transport Hire
+T-02.2,4,WEAVAWAY TRAVEL,Over500_2026_P04_-_published.xlsx:456,Over500_2026_P04_-_published.xlsx,456,2026-07-24,WEAVAWAY TRAVEL LTD,8097.04,Education & SEND,Transport Hire
+T-02.2,4,WEAVAWAY TRAVEL,Over500_2026_P04_-_published.xlsx:305,Over500_2026_P04_-_published.xlsx,305,2026-07-24,WEAVAWAY TRAVEL LTD,7986.0,Education & SEND,Transport Hire
+T-02.2,5,ROADSIDE TECHNOLOGIES,Over500_2026_P04_-_published.xlsx:735,Over500_2026_P04_-_published.xlsx,735,2026-07-13,Roadside Technologies Ltd,21000.0,Environment,Payment to contractor
+T-02.2,5,ROADSIDE TECHNOLOGIES,Over500_2026_P04_-_published.xlsx:733,Over500_2026_P04_-_published.xlsx,733,2026-07-13,Roadside Technologies Ltd,11188.22,Environment,Payment to contractor
+T-02.2,5,ROADSIDE TECHNOLOGIES,Over500_2026_P04_-_published.xlsx:1287,Over500_2026_P04_-_published.xlsx,1287,2026-07-13,Roadside Technologies Ltd,10298.22,Environment,Payment to contractor
+T-02.2,5,ROADSIDE TECHNOLOGIES,Over500_2026_P04_-_published.xlsx:601,Over500_2026_P04_-_published.xlsx,601,2026-07-13,Roadside Technologies Ltd,9103.64,Environment,Payment to contractor
+T-02.2,5,ROADSIDE TECHNOLOGIES,Over500_2026_P04_-_published.xlsx:740,Over500_2026_P04_-_published.xlsx,740,2026-07-13,Roadside Technologies Ltd,9103.64,Environment,Payment to contractor

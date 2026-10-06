@@ -1,0 +1,1 @@
+Enable agent teams for this project: add CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 to the env block of .claude/settings.json, creating the file if it does not exist, and show me the result.

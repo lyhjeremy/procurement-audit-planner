@@ -1,0 +1,11 @@
+Build the extract-rules skill described in CLAUDE.md. Before writing it, extract the text of data/contract-rules.pdf with pdftotext, both plain and with -layout, and read it, so the skill fits the document's real structure.
+
+Requirements:
+- SKILL.md frontmatter has only name and description.
+- One entry per testable rule, with clause, page, type, scope, thresholds as printed (GBP integers plus inclusive/exclusive flags), required action, approver, evidence source and a verbatim quote.
+- Thresholds the PDF only names, such as "the Threshold", go in a top-level parameters object with null values. Never fill them in from memory.
+- Every clause ends up in either rules or excluded, with a one-line reason for each exclusion.
+- Contradictions and drafting gaps in the PDF go in a notes list.
+- Write verify_quotes.py next to SKILL.md. It checks the schema, sequential rule IDs, declared parameters, and that every quote appears on its stated PDF page.
+
+Test the verifier on a fixture with deliberate errors before you finish. Don't run the skill on the PDF yet.

@@ -1,0 +1,3 @@
+Create a sub-agent called risk-assessor that builds the risk register by following the risk-assessment skill. It reads rules.json, analytics.json and history.json, writes outputs/risk-ratings.json, runs the builder until there are no failures and no warnings (the builder also writes the outputs/auditor-comments.md decision template), and reports. It never edits its inputs, the skill or the builder, and it never approves scope: it recommends and the auditor decides.
+
+Update the flow diagram and the repo tree in CLAUDE.md so that step (3) names this sub-agent.

@@ -1,0 +1,9 @@
+# risk-assessor memory (method only, no figures or ratings)
+
+- 2026-10-06 Typed-figure check is `£\s?\d|\b\d{3,}\b` on prose with citations and placeholders removed. Years (e.g. an appendix's financial year) and "S.151" both trip it; write "S151 Officer" and describe periods in words. Two-digit words like "30 days" are fine but prefer the placeholder.
+- 2026-10-06 Impact bands: cite them as `[history:$.scoring_method.impact_scale[N].financial]` (or `.compliance` / `.reputation`); index 0 is score 5 (Critical), 4 is score 1. Never type the band's £ limits.
+- 2026-10-06 `[metric:...]` resolves only scalars. Booleans (e.g. a register_present flag) and caveat strings are scalars and can be cited; top20 lists and by_tag objects cannot.
+- 2026-10-06 history.json `gaps` entries are citable by their `item` name; risk_themes (RT-), audits (AUD-) and discrepancies (D-) by id.
+- 2026-10-06 Repeat uplift: when the only adverse audit on a theme is used for the uplift, set the base likelihood from the data/control-visibility row of the rubric, not the "adverse audit with no data signal" row, or the audit is counted twice.
+- 2026-10-06 analytics.json has no per-month breakdown, so the rubric's "across months" test cannot be applied from the summary; rate on counts and supplier spread and say so.
+- 2026-10-06 Revision: quoting an auditor comment into scope_reason or a justification also runs the typed-figure check. Swap any £ value in the quote for its placeholder (e.g. the threshold value path) before building.

@@ -1,0 +1,5 @@
+Record my decisions in outputs/auditor-comments.md. Reviewer: <your name>. Date: today.
+- R-01: approve.
+- R-09: amend. Raise likelihood to 3: awards above £500,000 are rare but carry the highest stakes.
+- R-10: reject. Grants will be covered by a separate review.
+Leave every other risk blank for now.

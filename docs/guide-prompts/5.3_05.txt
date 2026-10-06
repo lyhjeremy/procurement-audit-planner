@@ -1,0 +1,8 @@
+Build the audit-program skill described in CLAUDE.md. First look at outputs/risk-register.md, outputs/auditor-comments.md, outputs/risk-ratings.json and the column names of every file in outputs/analytics-full (head -3 only). Design:
+- The planner writes its judgments to outputs/audit-plan.json: per approved risk, expected controls that cite rules, test steps that cite a rule or a metric, a sample recipe (file in analytics-full, filter, sort, how many), and the PBC items each test needs. Memo text uses {{$.path}} placeholders for every figure.
+- build_pack.py, next to SKILL.md, computes the approved scope from auditor-comments.md and risk-ratings.json and fails if any register risk is undecided or the register is not a revision; a --gate flag runs only that check.
+- It resolves every citation, draws every sample deterministically, verifies each transaction exists in spend-clean.csv and writes it to outputs/samples/<test>.csv, checks every control has a test, and checks every rule in rules.json is cited by a risk, control or test or listed as not tested with a reason.
+- It renders planning-memo.md, risk-control-matrix.md and audit-program.md (ending with the PBC list) and writes pack-figures.json listing every figure it computed itself.
+- Size samples by score and use indicator language throughout.
+
+Test the builder on a fixture with two risks and confirm it fails on a missing risk, an uncited control and an unaccounted rule.

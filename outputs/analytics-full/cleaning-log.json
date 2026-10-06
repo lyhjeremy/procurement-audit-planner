@@ -1,0 +1,135 @@
+{
+  "files": {
+    "Over500_2026_P02_-_published.xlsx": {
+      "header_row_excel": 1,
+      "rows": 2892
+    },
+    "Over500_2026_P03_-_published.xlsx": {
+      "header_row_excel": 2,
+      "rows": 3547
+    },
+    "Over500_2026_P04_-_published.xlsx": {
+      "header_row_excel": 2,
+      "rows": 4168
+    }
+  },
+  "rows_raw": 10607,
+  "rows_after_exclusions": 8534,
+  "date_min": "2026-05-01",
+  "date_max": "2026-07-31",
+  "months_covered": 3,
+  "total_gbp_raw": 80427254.26,
+  "total_gbp": 66778104.78,
+  "excluded": {
+    "redacted_supplier": {
+      "rows": 2015,
+      "gbp": 2746746.71,
+      "reason": "supplier is 'Redacted' (many payees under one label); unusable for supplier-level tests"
+    },
+    "pension_statutory": {
+      "rows": 12,
+      "gbp": 9235814.93,
+      "reason": "narrative matches LGPS|PENSION|SUPERANNUATION: statutory pension contributions, not procurement"
+    },
+    "inter_authority": {
+      "rows": 46,
+      "gbp": 1666587.84,
+      "reason": "payee is a public body (supplier regex) or narrative is joint arrangements, narrative not 'Private Contractors'"
+    }
+  },
+  "tags": {
+    "agency_staff": {
+      "rows": 24,
+      "gbp": 1285541.24,
+      "suppliers": 7
+    },
+    "care_or_education_placement": {
+      "rows": 5839,
+      "gbp": 30571711.3,
+      "suppliers": 361
+    },
+    "general_procurement": {
+      "rows": 2126,
+      "gbp": 28318367.76,
+      "suppliers": 518
+    },
+    "grant": {
+      "rows": 339,
+      "gbp": 6033599.82,
+      "suppliers": 198
+    },
+    "premises_non_procurement": {
+      "rows": 206,
+      "gbp": 568884.66,
+      "suppliers": 31
+    }
+  },
+  "regexes": {
+    "pension_statutory": "LGPS|PENSION|SUPERANNUATION",
+    "inter_authority_supplier": "\\b(?:COUNCIL|BOROUGH|COUNTY|CNCL|NHS|POLICE|FIRE AUTHORITY|FIRE AND RESCUE|HMRC|HM REVENUE|DEPARTMENT FOR|MINISTRY OF)\\b",
+    "inter_authority_narrative": "JOINT ARRANGEMENTS",
+    "inter_authority_unless_narrative": "PRIVATE CONTRACTORS",
+    "placement_services_prefix": [
+      "Adult Social Care",
+      "Children's Social Care",
+      "Education"
+    ],
+    "placement_narratives": [
+      "Other agencies",
+      "Private Contractors",
+      "Voluntary Associations"
+    ],
+    "grant": "GRANT",
+    "agency_staff": "AGENCY",
+    "premises_non_procurement": "RENT|RATES|WATER RATES|LEASE",
+    "tag_order": [
+      "care_or_education_placement",
+      "grant",
+      "agency_staff",
+      "premises_non_procurement",
+      "general_procurement"
+    ]
+  },
+  "contracts": {
+    "contracts_present": true,
+    "rows_in_file": 150,
+    "organisation_names_kept": {
+      "West Berkshire Council": 115,
+      "West Berkshire": 20,
+      "WEST BERKSHIRE COUNCIL": 6
+    },
+    "organisation_names_dropped": {
+      "Ministry of Defence": 5,
+      "Westworks Procurement Ltd": 1,
+      "SOUTHAMPTON CITY COUNCIL": 1,
+      "CITY OF BRADFORD METROPOLITAN DISTRICT COUNCIL": 1,
+      "Health Education England": 1
+    },
+    "rows_dropped_other_buyers": 9,
+    "rows_for_council": 141,
+    "notices": 141,
+    "notices_without_supplier": 0,
+    "notice_supplier_pairs": 210,
+    "distinct_suppliers": 143,
+    "active_in_window": 62,
+    "ended_before_window": 79,
+    "active_pairs": 131,
+    "ended_pairs": 79,
+    "zero_value_awards": 7,
+    "rows_per_year": {
+      "2021": 7,
+      "2022": 10,
+      "2023": 39,
+      "2024": 52,
+      "2025": 28,
+      "2026": 5
+    },
+    "published_range": [
+      "2021-02-23",
+      "2026-09-09"
+    ],
+    "unparsed_end_dates": 0,
+    "warnings": []
+  },
+  "register_present": false
+}

@@ -1,0 +1,14 @@
+test,item,group,row_id,source_file,sheet_row,pay_date,supplier,amount,service,narrative
+T-04.3,1,STRIPEWEB,Over500_2026_P03_-_published.xlsx:1650,Over500_2026_P03_-_published.xlsx,1650,2026-06-03,Stripeweb,2180.38,"Finance, Property & Procurement",Charges
+T-04.3,1,STRIPEWEB,Over500_2026_P04_-_published.xlsx:641,Over500_2026_P04_-_published.xlsx,641,2026-07-02,Stripeweb,2131.94,"Finance, Property & Procurement",Charges
+T-04.3,1,STRIPEWEB,Over500_2026_P02_-_published.xlsx:570,Over500_2026_P02_-_published.xlsx,570,2026-05-06,Stripeweb,1988.78,"Finance, Property & Procurement",Charges
+T-04.3,2,JPAS CONTRACTING,Over500_2026_P04_-_published.xlsx:788,Over500_2026_P04_-_published.xlsx,788,2026-07-24,JPAS Contracting Ltd,18000.0,Community Services,Payment to contractor
+T-04.3,2,JPAS CONTRACTING,Over500_2026_P02_-_published.xlsx:685,Over500_2026_P02_-_published.xlsx,685,2026-05-06,JPAS Contracting Ltd,6235.0,Community Services,Payment to contractor
+T-04.3,3,ALLSTAR BUSINESS SOLUTIONS,Over500_2026_P02_-_published.xlsx:200,Over500_2026_P02_-_published.xlsx,200,2026-05-26,ALLSTAR BUSINESS SOLUTIONS LTD,2544.81,Environment,Direct Transport Costs
+T-04.3,3,ALLSTAR BUSINESS SOLUTIONS,Over500_2026_P02_-_published.xlsx:199,Over500_2026_P02_-_published.xlsx,199,2026-05-26,ALLSTAR BUSINESS SOLUTIONS LTD,2409.29,Environment,Direct Transport Costs
+T-04.3,3,ALLSTAR BUSINESS SOLUTIONS,Over500_2026_P03_-_published.xlsx:148,Over500_2026_P03_-_published.xlsx,148,2026-06-15,ALLSTAR BUSINESS SOLUTIONS LTD,2343.27,Environment,Direct Transport Costs
+T-04.3,4,SHINFIELD BUILDERS,Over500_2026_P03_-_published.xlsx:692,Over500_2026_P03_-_published.xlsx,692,2026-06-15,SHINFIELD BUILDERS,10337.0,Development & Housing,Minor Works
+T-04.3,4,SHINFIELD BUILDERS,Over500_2026_P02_-_published.xlsx:748,Over500_2026_P02_-_published.xlsx,748,2026-05-21,SHINFIELD BUILDERS,10010.4,Development & Housing,Minor Works
+T-04.3,5,1ST TRANSPORT INNOVATION READING,Over500_2026_P04_-_published.xlsx:173,Over500_2026_P04_-_published.xlsx,173,2026-07-29,1st Transport Innovation Reading Ltd T/A 5 Star Cars & Reading Central Cars,2849.5,Education & SEND,Transport Hire
+T-04.3,5,1ST TRANSPORT INNOVATION READING,Over500_2026_P04_-_published.xlsx:343,Over500_2026_P04_-_published.xlsx,343,2026-07-27,1st Transport Innovation Reading Ltd T/A 5 Star Cars & Reading Central Cars,2486.0,Education & SEND,Transport Hire
+T-04.3,5,1ST TRANSPORT INNOVATION READING,Over500_2026_P03_-_published.xlsx:329,Over500_2026_P03_-_published.xlsx,329,2026-06-09,1st Transport Innovation Reading Ltd T/A 5 Star Cars & Reading Central Cars,2224.0,Education & SEND,Transport Hire

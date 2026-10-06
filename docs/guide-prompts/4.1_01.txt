@@ -1,0 +1,1 @@
+Show me outputs/auditor-comments.md next to the summary table of outputs/risk-register.md. Confirm there is one row for every risk in the register, and tell me how many decisions are still blank.
