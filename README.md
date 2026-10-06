@@ -101,7 +101,7 @@ sends `QA vN: PASS/FAIL`; each ends with a DONE message to the lead.
 |---|---|
 | Rules | 65 testable rules, 99 excluded clauses, 4 statutory thresholds left null because the PDF only names them |
 | Spend | 10,607 payments read, 8,534 kept after excluding pension, inter-authority and redacted-payee rows; 7 indicator tests |
-| History | 20 audits with opinions (including one Limited on Direct Payments), 10 risk themes, the council's 5x5 scoring method, 13 discrepancies in the papers |
+| History | 20 audit entries (16 audits, 3 follow-ups, 1 advisory review) with their opinions, including Limited on Personal Budgets (Direct Payments); 10 risk themes; the council's 5x5 scoring method; 13 discrepancies in the papers |
 | Register | 10 risks rated; the builder marks, without resolving, the conflict between Figure 4 (corporate register at 9 or above) and Table 4 (15 or above) |
 | Gate | Jeremy Lee approved 8, amended R-01 into scope and rejected R-10; revision 1 |
 | Team | 3 pack versions, 12 challenges over 2 rounds (11 resolved, 1 for the auditor), QA verdict READY FOR SIGN-OFF with 4 of 4 checks passing |
@@ -119,9 +119,11 @@ sub-agents 3.1 to 3.7, the human gate 4.1 to 4.3 and agent teams 5.1 to 5.8.
 and the file that shows it, and the guide's prompts are saved in
 `docs/guide-prompts/`.
 
-Two things differ from a plain run of the guide, and the step list says so.
+Three things differ from a plain run of the guide, and the step list says so.
 The `risk-assessment` skill (step 3.5) has no finished file in the guide, so
-we wrote it from the guide's prompt. And for step 5.7, Claude Code only
+we wrote it from the guide's prompt. The step 1.2 follow-up question was
+asked during the final review rather than straight after step 1.2
+([docs/step-1.2-answer.md](docs/step-1.2-answer.md)). And for step 5.7, Claude Code only
 spawns true teammates in an interactive terminal; in the session we used, the
 three team agents ran as sub-agents and the lead delivered their protocol
 messages unchanged ([docs/team-messages.md](docs/team-messages.md)). The
@@ -160,7 +162,7 @@ data/                     public inputs (read-only)
 .claude/settings.json     agent teams switch (step 5.2)
 scripts/                  spend-analyst Python, verify_history.py, checks/
 outputs/                  everything the run produced
-docs/                     guide steps, guide prompts, team message log
+docs/                     guide steps, guide prompts, team message log, step 1.2 answer
 deploy/                   Part B harness: FastAPI app, Dockerfile, fly.toml
 ```
 

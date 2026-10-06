@@ -21,7 +21,7 @@ guide's prompt.
 | Pre | VS Code installed | Claude Code CLI used directly; the editor is not part of the build | n/a |
 | Pre | Claude Code installed and signed in | Claude Code 2.1.291, signed in | n/a |
 | 1.1 | Make the folder, start Claude Code | Folder `procurement-audit-planner` created outside Google Drive | this repo |
-| 1.2 | Hand over the project brief | `CLAUDE.md` written with the guide's content exactly (313 lines) | `CLAUDE.md` |
+| 1.2 | Hand over the project brief, then ask "What do you know about this project?" | `CLAUDE.md` written with the guide's content exactly (313 lines). The follow-up question was missed at the time and asked during the final review; the answer summarises the system and its principles | `CLAUDE.md`, `docs/step-1.2-answer.md` |
 | 1.3 | Download the data folder | `data.zip` from the guide unzipped to `data/` (3 workbooks, 4 committee PDFs, rules PDF, contracts CSV) | `data/` |
 | 1.4 | Set up Python and check the data | `.venv` with pandas and openpyxl, `requirements.txt`; poppler present. Check found 10,607 spend rows, header on row 1 in P02 and row 2 in P03/P04, dates already datetime, 141 of 150 contract rows are the council's under 3 spellings (one upper-case) | `requirements.txt` |
 | 1.5 | Create the project folders | `.claude/skills`, `.claude/agents`, `scripts`, `outputs` | repo tree |
@@ -40,7 +40,7 @@ guide's prompt.
 | 3.1 | Build the spend-analyst | Copied the finished agent file | `.claude/agents/spend-analyst.md` |
 | 3.2 | Run the spend-analyst | 10,607 rows read, 8,534 kept; 7 tests run with thresholds taken from `rules.json`; the agent wrote and ran `clean.py`, `analyse.py` and `selfcheck.py` (8 of 8 re-derivations matched) | `outputs/analytics.json`, `outputs/analytics-full/`, `scripts/` |
 | 3.3 | Build the findings-analyst | Copied the finished agent file and `verify_history.py` | `.claude/agents/findings-analyst.md`, `scripts/verify_history.py` |
-| 3.4 | Run it and check three items visually | 20 audits, 10 risk themes, the council's 5x5 scoring method, 13 discrepancies; verifier passed (130 quotes). One audit opinion, one impact-scale entry and one risk band were checked against rendered PDF pages: all three matched | `outputs/history.json` |
+| 3.4 | Run it and check three items visually | 20 audit entries (16 audits, 3 follow-ups, 1 advisory review), 10 risk themes, the council's 5x5 scoring method, 13 discrepancies; verifier passed (130 quotes). One audit opinion, one impact-scale entry and one risk band were checked against rendered PDF pages: all three matched | `outputs/history.json` |
 | 3.5 | Build the risk-assessment skill | No finished file is offered for this step, so it was written from the guide's prompt: `SKILL.md` (method, theme table, likelihood rubric, impact method, ratings format) and `build_register.py` (resolves citations, fills placeholders, scores on the council's matrix, drops untraceable risks, writes the decision template, enforces revisions). Tested on a fixture with one good and one broken risk, and on a revision with an unrequested change | `.claude/skills/risk-assessment/` |
 | 3.6 | Build the risk-assessor | Copied the finished agent file; `CLAUDE.md` already names it at step (3), so no edit was needed | `.claude/agents/risk-assessor.md` |
 | 3.7 | Run it and review the register | 10 risks rated, builder `warnings: 0, failures: 0`; builder rerun by the lead; no supplier name in any risk statement or justification (checked against 181 normalised supplier names) | `outputs/risk-register.md`, `outputs/risk-ratings.json` |
