@@ -27,6 +27,7 @@
   --tick: #ef6b5f; --pencil: #8fb2db; --wait: #d6b45a; --wash: #232c2d;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; }
 body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.55 var(--sans); }
 a { color: var(--pencil); }
@@ -116,6 +117,8 @@ main { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 28px; pa
   font: 16px/1.65 var(--serif); overflow-x: auto; }
 .paper h1, .paper h2, .paper h3 { font-family: var(--serif); line-height: 1.25; }
 .paper h1 { font-size: 24px; margin-top: 0; }
+.paper h2 { font-size: 19px; margin: 28px 0 8px; }
+.paper h3 { font-size: 16.5px; margin: 22px 0 6px; }
 .paper p, .paper li { max-width: 78ch; }
 .paper table { border-collapse: collapse; font: 13.5px/1.45 var(--sans); margin: 12px 0; }
 .paper th, .paper td { border: 1px solid var(--rule); padding: 5px 8px; text-align: left; vertical-align: top; }
@@ -143,7 +146,7 @@ footer { border-top: 1px solid var(--rule); padding: 16px 0 30px; color: var(--m
       <input type="password" id="pass" placeholder="Passcode" aria-label="Passcode" required>
       <input type="text" id="label" placeholder="Label (optional)" aria-label="Run label" maxlength="80">
       <button class="btn" type="submit">Start run</button>
-      <span class="note">A full run takes about 30 to 60 minutes and spends API credit.</span>
+      <span class="note">A full run takes about 20 to 40 minutes of agent work and about $4 of API credit.</span>
     </form>
     <div class="msg" id="topmsg" role="status"></div>
   </div>
@@ -347,7 +350,7 @@ $("#newform").onsubmit = async ev => {
   try {
     keepPass($("#pass").value);
     const r = await post("/api/runs", {passcode: $("#pass").value, label: $("#label").value});
-    m.textContent = "Run started. The first three stages take about 20 to 40 minutes.";
+    m.textContent = "Run started. The first three stages take about 10 to 20 minutes.";
     $("#newform").hidden = true; setTab("activity"); await loadRuns(r.id);
   } catch (err) { m.className = "msg err"; m.textContent = err.message; }
 };
