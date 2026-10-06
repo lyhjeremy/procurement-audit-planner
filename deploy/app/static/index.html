@@ -317,6 +317,19 @@ function renderGate() {
         await refresh(); showDoc("review.md");
       } catch (err) { $("#signmsg").className = "msg err"; $("#signmsg").textContent = err.message; }
     };
+  } else if (STATE.status === "failed" && RID !== "reference") {
+    g.innerHTML = `<form class="gatebox" id="retryform"><h3>This run stopped</h3>
+      <p>${esc(STATE.error || "A stage did not finish.")} Retrying runs the stopped stage again and keeps everything the earlier stages produced, so it costs less than a new run.</p>
+      <div class="sign"><label>Passcode<input type="password" id="rpass" value="${esc(savedPass())}" required></label>
+      <button class="btn" type="submit">Retry the stopped stage</button></div><div class="msg" id="retrymsg" role="status"></div></form>`;
+    $("#retryform").onsubmit = async ev => {
+      ev.preventDefault();
+      try {
+        keepPass($("#rpass").value);
+        await post(`/api/runs/${RID}/retry`, {passcode: $("#rpass").value});
+        setTab("activity"); await openRun(RID);
+      } catch (err) { $("#retrymsg").className = "msg err"; $("#retrymsg").textContent = err.message; }
+    };
   } else g.innerHTML = "";
 }
 

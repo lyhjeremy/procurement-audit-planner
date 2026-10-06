@@ -8,13 +8,16 @@ and agents are the same files a person would use in VS Code.
 import asyncio, datetime, json, os, re, shutil, time, uuid
 from pathlib import Path
 
-from claude_agent_sdk import (AgentDefinition, AssistantMessage, ClaudeAgentOptions, ResultMessage, TextBlock,
+from claude_agent_sdk import (AgentDefinition, AssistantMessage, ClaudeAgentOptions, ClaudeSDKClient, ResultMessage, TextBlock,
                               ToolResultBlock, ToolUseBlock, UserMessage, query)
 
 TEMPLATE = Path(os.environ.get("TEMPLATE_DIR", "/app/template"))
 RUNS = Path(os.environ.get("RUNS_DIR", "/data/runs"))
 MODEL = os.environ.get("AGENT_MODEL", "claude-sonnet-5-5")
 STAGE_BUDGET = float(os.environ.get("STAGE_BUDGET_USD", "6"))
+STAGE_MINUTES = int(os.environ.get("STAGE_MINUTES", "45"))
+NUDGES = int(os.environ.get("STAGE_NUDGES", "4"))
+QUIET_SECONDS = int(os.environ.get("QUIET_SECONDS", "60"))
 
 # Stage prompts are the guide's own prompts, with the parallel analysts joined into one stage.
 STAGES = [
@@ -167,46 +170,101 @@ async def run_stage(run: Run, stage: dict):
              "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "4", "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"},
     )
     t0 = time.time()
-    result = None
+    state = {"result": None, "results": 0, "last": time.time()}
+
+    def handle(msg):
+        state["last"] = time.time()
+        who = names.get(getattr(msg, "parent_tool_use_id", None) or "", "lead")
+        if isinstance(msg, AssistantMessage):
+            for b in msg.content:
+                if isinstance(b, TextBlock) and b.text.strip():
+                    run.event(kind="text", stage=sid, who=who, text=b.text[:4000])
+                elif isinstance(b, ToolUseBlock):
+                    if b.name in ("Agent", "Task"):
+                        label = b.input.get("name") or b.input.get("subagent_type") or "sub-agent"
+                        names[b.id] = label
+                        run.event(kind="spawn", stage=sid, who=who, text=f"starts {label}",
+                                  detail=(b.input.get("prompt") or "")[:600])
+                    else:
+                        run.event(kind="tool", stage=sid, who=who, text=describe_tool(b))
+        elif isinstance(msg, UserMessage) and isinstance(msg.content, list):
+            for b in msg.content:
+                if isinstance(b, ToolResultBlock) and b.is_error:
+                    txt = b.content if isinstance(b.content, str) else json.dumps(b.content)[:300]
+                    run.event(kind="tool_error", stage=sid, who=who, text=str(txt)[:300])
+        elif isinstance(msg, ResultMessage):
+            state["result"] = msg
+            state["results"] += 1
+
+    def missing():
+        return [p for p in stage["produces"] if not (run.ws / p).exists()]
+
+    # The client stays connected for the whole stage, so background sub-agents keep
+    # working between the lead's turns. If the lead ends a turn while required files
+    # are still missing, the harness waits for quiet and then nudges it (at most
+    # NUDGES times, within STAGE_MINUTES).
     try:
-        async for msg in query(prompt=stage["prompt"], options=opts):
-            who = names.get(getattr(msg, "parent_tool_use_id", None) or "", "lead")
-            if isinstance(msg, AssistantMessage):
-                for b in msg.content:
-                    if isinstance(b, TextBlock) and b.text.strip():
-                        run.event(kind="text", stage=sid, who=who, text=b.text[:4000])
-                    elif isinstance(b, ToolUseBlock):
-                        if b.name in ("Agent", "Task"):
-                            label = b.input.get("name") or b.input.get("subagent_type") or "sub-agent"
-                            names[b.id] = label
-                            run.event(kind="spawn", stage=sid, who=who, text=f"starts {label}",
-                                      detail=(b.input.get("prompt") or "")[:600])
-                        else:
-                            run.event(kind="tool", stage=sid, who=who, text=describe_tool(b))
-            elif isinstance(msg, UserMessage) and isinstance(msg.content, list):
-                for b in msg.content:
-                    if isinstance(b, ToolResultBlock) and b.is_error:
-                        txt = b.content if isinstance(b.content, str) else json.dumps(b.content)[:300]
-                        run.event(kind="tool_error", stage=sid, who=who, text=str(txt)[:300])
-            elif isinstance(msg, ResultMessage):
-                result = msg
+        async with ClaudeSDKClient(options=opts) as client:
+            reader = asyncio.create_task(_drain(client, handle))
+            await client.query(stage["prompt"])
+            nudges, seen = 0, 0
+            while True:
+                await asyncio.sleep(5)
+                if reader.done():
+                    break
+                r = state["result"]
+                if state["results"] == seen or r is None:
+                    if time.time() - t0 > STAGE_MINUTES * 60:
+                        run.event(kind="error", stage=sid, text=f"Stage time limit of {STAGE_MINUTES} minutes reached.")
+                        break
+                    continue
+                if r.is_error or not missing():
+                    break
+                if nudges >= NUDGES or time.time() - t0 > STAGE_MINUTES * 60:
+                    break
+                if time.time() - state["last"] < QUIET_SECONDS:
+                    continue  # teammates are still active; give them time
+                seen = state["results"]
+                nudges += 1
+                text = nudge_text(sid, missing())
+                run.event(kind="prompt", stage=sid, text=f"Harness status check {nudges}: {text}")
+                await client.query(text)
+            reader.cancel()
     except Exception as e:  # the SDK raises after an error result; keep what was captured
         run.event(kind="error", stage=sid, text=f"{type(e).__name__}: {str(e)[:500]}")
-    cost = float(getattr(result, "total_cost_usd", 0) or 0)
+    result = state["result"]
+    cost = float(getattr(result, "total_cost_usd", 0) or 0)  # cumulative across turns on one client
     st = run.state()
     st["cost_usd"] = round(st.get("cost_usd", 0) + cost, 4)
     run.save(st)
-    ok = result is not None and not result.is_error and all((run.ws / p).exists() for p in stage["produces"])
-    missing = [p for p in stage["produces"] if not (run.ws / p).exists()]
+    miss = missing()
+    ok = result is not None and not result.is_error and not miss
     run.set_stage(sid, status="done" if ok else "failed", finished=now(), seconds=round(time.time() - t0),
                   cost_usd=round(cost, 4), turns=getattr(result, "num_turns", None),
-                  result=(getattr(result, "result", "") or "")[:6000], missing=missing)
+                  result=(getattr(result, "result", "") or "")[:6000], missing=miss)
     run.event(kind="result", stage=sid, ok=ok, text=(getattr(result, "result", "") or "")[:6000],
               cost_usd=round(cost, 4), seconds=round(time.time() - t0))
     if not ok:
-        why = f"missing {', '.join(missing)}" if missing else (getattr(result, "subtype", None) or "no result")
+        why = f"missing {', '.join(miss)}" if miss else (getattr(result, "subtype", None) or "no result")
         run.update(status="failed", error=f"{stage['title']} failed: {why}")
     return ok
+
+
+async def _drain(client, handle):
+    async for msg in client.receive_messages():
+        handle(msg)
+
+
+def nudge_text(sid, miss):
+    if sid == "team":
+        return ("Status check from the harness: outputs/review.md does not exist yet, so the team has not finished. "
+                "Check on the teammates by name with SendMessage. If the challenger has sent CHALLENGER DONE, tell the "
+                "planner to send PLANNER DONE with its summary. Once the planner and the challenger are both done, tell "
+                "the qa-reviewer to run the checks on the latest pack and write outputs/review.md, then wait for QA DONE. "
+                "If a teammate has stopped, start it again from its agent file with the same name. Then report for "
+                "sign-off as CLAUDE.md says.")
+    return ("Status check from the harness: these files the stage must produce do not exist yet: "
+            + ", ".join(miss) + ". Continue the task until they exist, then report.")
 
 
 def describe_tool(b: ToolUseBlock) -> str:
@@ -244,6 +302,28 @@ async def second_half(run: Run):
         run.set_stage("signoff", status="waiting")
         run.update(status="awaiting_signoff", current="signoff")
         run.event(kind="gate", text="Pack ready. Waiting for the auditor's sign-off.")
+
+
+async def resume(run: Run):
+    """Run a stopped run again from the stage that failed; earlier stages and their files are kept."""
+    st = run.state()
+    failed = next((sid for sid in FIRST_HALF + SECOND_HALF if st["stages"][sid].get("status") == "failed"), None)
+    if not failed:
+        return
+    run.update(status="running", error=None)
+    run.event(kind="run", text=f"Retrying from {failed}; the files of earlier stages are kept.")
+    if failed in FIRST_HALF:
+        rest = FIRST_HALF[FIRST_HALF.index(failed):]
+        if await run_stages(run, rest):
+            run.set_stage("gate", status="waiting")
+            run.update(status="awaiting_gate", current="gate")
+            run.event(kind="gate", text="Register ready. Waiting for the auditor's decisions.")
+    else:
+        rest = SECOND_HALF[SECOND_HALF.index(failed):]
+        if await run_stages(run, rest):
+            run.set_stage("signoff", status="waiting")
+            run.update(status="awaiting_signoff", current="signoff")
+            run.event(kind="gate", text="Pack ready. Waiting for the auditor's sign-off.")
 
 
 # ---- the two human gates are written by code, not by the model

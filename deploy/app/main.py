@@ -193,6 +193,19 @@ async def gate(rid: str, request: Request):
     return {"ok": True}
 
 
+@app.post("/api/runs/{rid}/retry")
+async def retry(rid: str, request: Request):
+    body = await request.json()
+    check_pass(body)
+    run = get_run(rid)
+    if run.state()["status"] != "failed":
+        raise HTTPException(409, "Only a stopped run can be retried.")
+    if busy():
+        raise HTTPException(409, f"Run {busy()} is still working. One run at a time.")
+    tasks[run.id] = asyncio.create_task(H.resume(run))
+    return {"ok": True}
+
+
 @app.post("/api/runs/{rid}/signoff")
 async def signoff(rid: str, request: Request):
     body = await request.json()
