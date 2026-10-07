@@ -149,6 +149,13 @@ laptop:
   credit. The Part A run is shown read-only as the reference run, so the site
   shows the complete workflow at any time.
 
+The site holds one complete live run made by the deployed harness itself
+("Live Run 1", 6 to 7 Oct 2026): all seven stages, including both human gates,
+signed off, about $4.45 of API credit. Its team stage first stopped early (the
+lead ended its session while teammates were finishing); the harness now keeps
+each stage's session open, nudges a lead that goes quiet, and can retry a
+stopped stage, which is how that run finished.
+
 Details and deployment steps are in [deploy/README.md](deploy/README.md).
 
 ## Repository layout

@@ -44,6 +44,17 @@ interactive terminal Claude Code adds that tool to every teammate itself; a
 headless session runs teammates as named sub-agents, which only get the tools
 their file lists. Instructions, tools and memory still come from the files.
 
+## Keeping a stage alive, and retrying one
+
+Each stage runs on one connected SDK client, so background sub-agents keep
+working between the lead's turns. If the lead ends a turn while the stage's
+required files are still missing, the harness waits for 60 seconds of quiet and
+sends a status check (at most 4 per stage, within 45 minutes); for the team
+stage the check tells the lead to collect PLANNER DONE and have the qa-reviewer
+write `review.md`. A run that stops anyway shows a **Retry the stopped stage**
+button (passcode), which reruns only the failed stage and keeps every file the
+earlier stages wrote.
+
 ## Safeguards
 
 - Watching runs and reading documents is open. Starting a run, recording
