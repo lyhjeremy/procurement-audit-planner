@@ -15,17 +15,22 @@ KEEP = ["rules.json", "analytics.json", "history.json", "risk-ratings.json", "ri
 
 STAGES = {
     "rules": ("2.1 to 2.2", "extract-rules skill run on the Contract Rules PDF. 65 testable rules, 99 excluded clauses, "
-              "4 statutory thresholds left null. verify_quotes.py: ALL CHECKS PASSED (65 rules, 99 excluded, 0 warning(s))."),
+              "4 statutory thresholds left null. At the second gate round clause 1.6.2 (a grant is a contract) was added "
+              "as CPR-66. verify_quotes.py: ALL CHECKS PASSED (66 rules, 98 excluded, 0 warning(s))."),
     "analysis": ("3.1 to 3.4", "spend-analyst: 10,607 payments read, 8,534 kept, 7 indicator tests, self-check 8 of 8. "
                  "findings-analyst: 20 audits, 10 risk themes, the council's 5x5 scoring method; 130 quotes verified; "
                  "three items checked against rendered PDF pages, all matched."),
     "register": ("3.5 to 3.7", "risk-assessment skill written from the guide's prompt and tested on fixtures. risk-assessor rated "
                  "10 risks; build_register.py: warnings 0, failures 0; no supplier names in risk text."),
-    "gate": ("4.1 to 4.2", "Jeremy Lee, 2026-10-06: approve R-02 to R-09, amend R-01 (bring into scope), reject R-10 (covered by R-04)."),
-    "revision": ("4.3 and 5.1", "Register revision 1: R-01 amended, R-10 rejected. build_pack.py --gate: gate closed, 9 risks in scope."),
-    "team": ("5.2 to 5.7", "planner, challenger and qa-reviewer: 3 pack versions, 12 challenges in 2 rounds (11 resolved, 1 for the "
-             "auditor), QA v3 READY FOR SIGN-OFF (4/4 checks). 9 risks, 11 controls, 17 tests, 229 sampled payments."),
-    "signoff": ("5.8", "Signed off by Jeremy Lee on 2026-10-06, noting challenge #2 (R-03 likelihood)."),
+    "gate": ("4.1 to 4.2", "Jeremy Lee, 2026-10-06: approve R-02 to R-09, amend R-01 (bring into scope), reject R-10 (covered by R-04). "
+             "Second round, 2026-10-09: amend R-04 to bring in grant suppliers (CPR-66) and agency-staff suppliers with no "
+             "live notice; exclude premises costs as property costs."),
+    "revision": ("4.3 and 5.1", "Register revision 1: R-01 amended, R-10 rejected. Revision 2: R-04 amended (still 15), premises "
+                 "excluded. build_pack.py --gate: gate closed at revision 2, 9 risks in scope."),
+    "team": ("5.2 to 5.7", "planner, challenger and qa-reviewer, messaging each other directly: 3 pack versions, 8 challenges in "
+             "2 rounds (all resolved, none for the auditor), QA v3 READY FOR SIGN-OFF (4/4 checks). 9 risks, 12 controls, "
+             "24 tests, 289 sampled payments."),
+    "signoff": ("5.8", "Signed off by Jeremy Lee on 2026-10-09, noting two questions for the council at fieldwork."),
 }
 
 
@@ -47,7 +52,7 @@ def main():
         ev.append({"kind": "gate" if sid in ("gate", "signoff") else "text", "stage": sid, "who": "summary", "text": text})
         if sid == "team":
             for line in (ROOT / "docs" / "team-messages.md").read_text(encoding="utf-8").splitlines():
-                m = re.match(r"^\| (\d+) \| ([\w-]+) \| ([\w-]+) \| (.*) \|$", line)
+                m = re.match(r"^\| (\d+) \| (?:[\d:]+ \| )?([\w-]+) \| ([\w-]+) \| (.*) \|$", line)
                 if m:
                     ev.append({"kind": "tool", "stage": "team", "who": m.group(2),
                                "text": f"message to {m.group(3)}: {m.group(4)}"})

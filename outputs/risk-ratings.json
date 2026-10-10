@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-06",
+  "generated_at": "2026-10-09",
   "risks": [
     {
       "id": "R-01",
@@ -87,29 +87,36 @@
     {
       "id": "R-04",
       "title": "Spend above the quotation threshold with no published contract notice",
-      "statement": "Suppliers paid at or above the quotation threshold on an annualised basis with no matching published contract notice may indicate spend without the competition or notice the Rules require [rule:CPR-54]. The notice export is not a contract register, so this is an indicator to check, not evidence of off-contract spend.",
+      "statement": "Suppliers paid at or above the quotation threshold on an annualised basis with no matching published contract notice may indicate spend without the competition or notice the Rules require [rule:CPR-54]. This covers general procurement, grants, which the Rules treat as contracts [rule:CPR-66], and agency staff, a bought service. The notice export is not a contract register, so this is an indicator to check, not evidence of off-contract spend.",
       "likelihood": {
         "score": 3,
-        "justification": "{{$.tests.off_contract.unmatched_general_procurement.suppliers}} general-procurement suppliers at or above £{{$.tests.off_contract.parameters.threshold}} annualised have no exact-name match to an active notice [metric:$.tests.off_contract.unmatched_general_procurement.suppliers], against {{$.tests.off_contract.per_match_class.exact.suppliers}} exact matches across all tags [metric:$.tests.off_contract.per_match_class.exact.suppliers]: a clear signal by count. Held at 3 because the source holds published notices only and no contract register was available [metric:$.tests.off_contract.register_present]; earlier awards, notices placed elsewhere, framework call-offs under another buyer and exempt placements will not appear. Placement suppliers are left out because placements are exempt from competition [rule:CPR-64]. Contract Letting received Reasonable Assurance [history:AUD-01], so no uplift."
+        "justification": "At or above £{{$.tests.off_contract.parameters.threshold}} annualised with no exact-name match to an active notice there are {{$.tests.off_contract.unmatched_by_dominant_tag.general_procurement.suppliers}} general-procurement suppliers [metric:$.tests.off_contract.unmatched_by_dominant_tag.general_procurement.suppliers], {{$.tests.off_contract.unmatched_by_dominant_tag.grant.suppliers}} grant suppliers [metric:$.tests.off_contract.unmatched_by_dominant_tag.grant.suppliers] and a further {{$.tests.off_contract.unmatched_by_dominant_tag.agency_staff.suppliers}} in agency staff [metric:$.tests.off_contract.unmatched_by_dominant_tag.agency_staff.suppliers], against {{$.tests.off_contract.per_match_class.exact.suppliers}} exact matches across all tags [metric:$.tests.off_contract.per_match_class.exact.suppliers]: a clear signal by count. Grants come within the Rules because providing funding or a grant to an external organisation is entering a contract [rule:CPR-66]. Held at 3 because the source holds published notices only and no contract register was available [metric:$.tests.off_contract.register_present]; earlier awards, notices placed elsewhere, framework call-offs under another buyer and grant agreements not published as notices will not appear. Placement suppliers stay with R-09 because placements are exempt from competition [rule:CPR-64]; premises costs are left out as property costs, not purchases under the Rules. Contract Letting received Reasonable Assurance [history:AUD-01], so no uplift. Adding grants and agency staff does not move the score."
       },
       "impact": {
         "score": 5,
-        "justification": "The annualised estimate for unmatched general-procurement suppliers, £{{$.tests.off_contract.unmatched_general_procurement.annualised_estimate_gbp}} [metric:$.tests.off_contract.unmatched_general_procurement.annualised_estimate_gbp], is in the Critical financial band [history:$.scoring_method.impact_scale[0].financial]; competition and publication duties apply [rule:CPR-54] [rule:CPR-05]. No adjustment."
+        "justification": "The annualised estimate for unmatched general-procurement suppliers alone, £{{$.tests.off_contract.unmatched_by_dominant_tag.general_procurement.annualised_estimate_gbp}} [metric:$.tests.off_contract.unmatched_by_dominant_tag.general_procurement.annualised_estimate_gbp], is in the Critical financial band [history:$.scoring_method.impact_scale[0].financial]; unmatched grant suppliers add £{{$.tests.off_contract.unmatched_by_dominant_tag.grant.annualised_estimate_gbp}} [metric:$.tests.off_contract.unmatched_by_dominant_tag.grant.annualised_estimate_gbp] and agency-staff suppliers £{{$.tests.off_contract.unmatched_by_dominant_tag.agency_staff.annualised_estimate_gbp}} [metric:$.tests.off_contract.unmatched_by_dominant_tag.agency_staff.annualised_estimate_gbp]. Competition and publication duties apply [rule:CPR-54] [rule:CPR-05], to grants as to other contracts [rule:CPR-66]. Already at the top of the scale, so the wider population does not move the score. No adjustment."
       },
       "repeat_uplift": null,
       "evidence": [
         "rule:CPR-54",
         "rule:CPR-05",
+        "rule:CPR-66",
         "rule:CPR-64",
-        "metric:$.tests.off_contract.unmatched_general_procurement.suppliers",
-        "metric:$.tests.off_contract.unmatched_general_procurement.annualised_estimate_gbp",
+        "metric:$.tests.off_contract.unmatched_by_dominant_tag.general_procurement.suppliers",
+        "metric:$.tests.off_contract.unmatched_by_dominant_tag.general_procurement.annualised_estimate_gbp",
+        "metric:$.tests.off_contract.unmatched_by_dominant_tag.grant.suppliers",
+        "metric:$.tests.off_contract.unmatched_by_dominant_tag.grant.annualised_estimate_gbp",
+        "metric:$.tests.off_contract.unmatched_by_dominant_tag.agency_staff.suppliers",
+        "metric:$.tests.off_contract.unmatched_by_dominant_tag.agency_staff.annualised_estimate_gbp",
+        "metric:$.population.tags.grant.gbp",
+        "metric:$.population.tags.agency_staff.gbp",
         "metric:$.tests.off_contract.per_match_class.exact.suppliers",
         "metric:$.tests.off_contract.register_present",
         "history:AUD-01"
       ],
-      "proposed_focus": "Obtain the council's contract register and reconcile it to the unmatched general-procurement suppliers, confirming near matches first; for suppliers still unmatched, request the quote, tender or waiver record behind the spend.",
+      "proposed_focus": "Obtain the council's contract register and grant agreements and reconcile them to the unmatched general-procurement, grant and agency-staff suppliers, confirming near matches first; for suppliers still unmatched, request the quote, tender, grant award or waiver record behind the spend.",
       "recommend_in_scope": true,
-      "scope_reason": "Largest exposure in the register; the reconciliation also tests register completeness (R-10).",
+      "scope_reason": "Largest exposure in the register; the reconciliation also tests register completeness, the reason R-10 was rejected.",
       "sample_source": "off-contract.csv"
     },
     {
@@ -252,8 +259,8 @@
       "reason": "The three statutory threshold values are null in rules.json, so analytics.json skipped the statutory tier of every test; not rated until the auditor supplies the figures with a source."
     },
     {
-      "theme": "Grants treated as contracts",
-      "reason": "Grant spend is tagged separately, and the clause that would bring a grant within the Rules is a definition excluded from rules.json with no rule ID to cite."
+      "theme": "Premises costs (rent, rates, leases)",
+      "reason": "Auditor: these are property costs, not purchases under the Rules, so suppliers tagged as premises are kept out of R-04."
     },
     {
       "id": "R-10",
@@ -262,15 +269,11 @@
     }
   ],
   "revision": {
-    "number": 1,
+    "number": 2,
     "changed": [
       {
-        "id": "R-01",
+        "id": "R-04",
         "as": "amended"
-      },
-      {
-        "id": "R-10",
-        "as": "rejected"
       }
     ]
   }

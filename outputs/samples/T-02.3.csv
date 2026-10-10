@@ -1,0 +1,19 @@
+test,item,group,row_id,source_file,sheet_row,pay_date,supplier,amount,service,narrative
+T-02.3,1,PANGBOURNE DAY NURSERY,Over500_2026_P03_-_published.xlsx:609,Over500_2026_P03_-_published.xlsx,609,2026-06-30,PANGBOURNE DAY NURSERY,21934.94,Education (DSG Funded) & Other Education Grants,Grants
+T-02.3,1,PANGBOURNE DAY NURSERY,Over500_2026_P04_-_published.xlsx:567,Over500_2026_P04_-_published.xlsx,567,2026-07-27,PANGBOURNE DAY NURSERY,21934.93,Education (DSG Funded) & Other Education Grants,Grants
+T-02.3,2,NEWBURY COMMUNITY RESOURCE CENTRE,Over500_2026_P04_-_published.xlsx:1273,Over500_2026_P04_-_published.xlsx,1273,2026-07-14,THE NEWBURY COMMUNITY RESOURCE CENTRE LTD,8333.33,Development & Housing,Grants
+T-02.3,2,NEWBURY COMMUNITY RESOURCE CENTRE,Over500_2026_P04_-_published.xlsx:773,Over500_2026_P04_-_published.xlsx,773,2026-07-14,THE NEWBURY COMMUNITY RESOURCE CENTRE LTD,8333.33,Development & Housing,Grants
+T-02.3,2,NEWBURY COMMUNITY RESOURCE CENTRE,Over500_2026_P04_-_published.xlsx:3193,Over500_2026_P04_-_published.xlsx,3193,2026-07-14,THE NEWBURY COMMUNITY RESOURCE CENTRE LTD,7027.35,Environment,Private Contractors
+T-02.3,2,NEWBURY COMMUNITY RESOURCE CENTRE,Over500_2026_P03_-_published.xlsx:2097,Over500_2026_P03_-_published.xlsx,2097,2026-06-16,THE NEWBURY COMMUNITY RESOURCE CENTRE LTD,6264.0,Education & SEND,Grants
+T-02.3,2,NEWBURY COMMUNITY RESOURCE CENTRE,Over500_2026_P04_-_published.xlsx:874,Over500_2026_P04_-_published.xlsx,874,2026-07-01,THE NEWBURY COMMUNITY RESOURCE CENTRE LTD,1632.48,Adult Social Care,Voluntary Associations
+T-02.3,3,MRS M ALSBURY,Over500_2026_P03_-_published.xlsx:611,Over500_2026_P03_-_published.xlsx,611,2026-06-30,MRS M ALSBURY,13393.22,Education (DSG Funded) & Other Education Grants,Grants
+T-02.3,3,MRS M ALSBURY,Over500_2026_P04_-_published.xlsx:1184,Over500_2026_P04_-_published.xlsx,1184,2026-07-27,MRS M ALSBURY,13393.21,Education (DSG Funded) & Other Education Grants,Grants
+T-02.3,3,MRS M ALSBURY,Over500_2026_P03_-_published.xlsx:622,Over500_2026_P03_-_published.xlsx,622,2026-06-30,MRS M ALSBURY,2482.92,Education (DSG Funded) & Other Education Grants,Grants
+T-02.3,4,PIED PIPER PRE SCHOOL,Over500_2026_P03_-_published.xlsx:601,Over500_2026_P03_-_published.xlsx,601,2026-06-17,PIED PIPER PRE-SCHOOL,23073.34,Education (DSG Funded) & Other Education Grants,Grants
+T-02.3,4,PIED PIPER PRE SCHOOL,Over500_2026_P03_-_published.xlsx:2094,Over500_2026_P03_-_published.xlsx,2094,2026-06-30,PIED PIPER PRE-SCHOOL,1435.1,Education (DSG Funded) & Other Education Grants,Grants
+T-02.3,4,PIED PIPER PRE SCHOOL,Over500_2026_P04_-_published.xlsx:763,Over500_2026_P04_-_published.xlsx,763,2026-07-02,PIED PIPER PRE-SCHOOL,800.0,Education (DSG Funded) & Other Education Grants,Grants
+T-02.3,4,PIED PIPER PRE SCHOOL,Over500_2026_P04_-_published.xlsx:702,Over500_2026_P04_-_published.xlsx,702,2026-07-03,PIED PIPER PRE-SCHOOL,800.0,Education (DSG Funded) & Other Education Grants,Grants
+T-02.3,5,BEANSHEAF COMMUNITY PRE SCHOO,Over500_2026_P03_-_published.xlsx:2074,Over500_2026_P03_-_published.xlsx,2074,2026-06-17,BEANSHEAF COMMUNITY PRE-SCHOO,24705.36,Education (DSG Funded) & Other Education Grants,Grants
+T-02.3,5,BEANSHEAF COMMUNITY PRE SCHOO,Over500_2026_P04_-_published.xlsx:1261,Over500_2026_P04_-_published.xlsx,1261,2026-07-02,BEANSHEAF COMMUNITY PRE-SCHOO,1000.0,Education (DSG Funded) & Other Education Grants,Grants
+T-02.3,6,MALLARD COTTAGE CHILDCARE,Over500_2026_P03_-_published.xlsx:583,Over500_2026_P03_-_published.xlsx,583,2026-06-30,MALLARD COTTAGE CHILDCARE,12502.47,Education (DSG Funded) & Other Education Grants,Grants
+T-02.3,6,MALLARD COTTAGE CHILDCARE,Over500_2026_P04_-_published.xlsx:569,Over500_2026_P04_-_published.xlsx,569,2026-07-27,MALLARD COTTAGE CHILDCARE,12502.46,Education (DSG Funded) & Other Education Grants,Grants

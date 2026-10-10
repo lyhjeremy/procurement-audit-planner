@@ -1,0 +1,14 @@
+test,item,group,row_id,source_file,sheet_row,pay_date,supplier,amount,service,narrative
+T-04.7,1,KPMG,Over500_2026_P03_-_published.xlsx:479,Over500_2026_P03_-_published.xlsx,479,2026-06-29,KPMG,76405.0,Executive Director - Resources,External audit costs
+T-04.7,1,KPMG,Over500_2026_P02_-_published.xlsx:655,Over500_2026_P02_-_published.xlsx,655,2026-05-19,KPMG,34250.0,"Finance, Property & Procurement",General Expenses
+T-04.7,1,KPMG,Over500_2026_P02_-_published.xlsx:568,Over500_2026_P02_-_published.xlsx,568,2026-05-29,KPMG,8500.0,Executive Director - Resources,External audit costs
+T-04.7,2,SCOTTISH AND SOUTHERN,Over500_2026_P03_-_published.xlsx:730,Over500_2026_P03_-_published.xlsx,730,2026-06-23,SCOTTISH & SOUTHERN,101258.24,Environment,Payment to contractor
+T-04.7,2,SCOTTISH AND SOUTHERN,Over500_2026_P04_-_published.xlsx:1282,Over500_2026_P04_-_published.xlsx,1282,2026-07-03,SCOTTISH & SOUTHERN,9502.74,Education & SEND,Payment to contractor
+T-04.7,3,EDUCATION SOFTWARE SOLUTIONS,Over500_2026_P02_-_published.xlsx:478,Over500_2026_P02_-_published.xlsx,478,2026-05-20,Education Software Solutions Limited,95536.35,"Transformation, Customer & ICT",IT
+T-04.7,3,EDUCATION SOFTWARE SOLUTIONS,Over500_2026_P02_-_published.xlsx:479,Over500_2026_P02_-_published.xlsx,479,2026-05-20,Education Software Solutions Limited,14794.0,"Transformation, Customer & ICT",IT
+T-04.7,4,CONTINENTAL LANDSCAPES,Over500_2026_P02_-_published.xlsx:178,Over500_2026_P02_-_published.xlsx,178,2026-05-27,Continental Landscapes Ltd,67604.74,Environment,Grounds Maintenance
+T-04.7,4,CONTINENTAL LANDSCAPES,Over500_2026_P02_-_published.xlsx:198,Over500_2026_P02_-_published.xlsx,198,2026-05-27,Continental Landscapes Ltd,12437.95,Environment,Grounds Maintenance
+T-04.7,4,CONTINENTAL LANDSCAPES,Over500_2026_P02_-_published.xlsx:180,Over500_2026_P02_-_published.xlsx,180,2026-05-27,Continental Landscapes Ltd,12396.75,Environment,Grounds Maintenance
+T-04.7,5,MAISHA STAFFING SOLUTIONS,Over500_2026_P03_-_published.xlsx:2001,Over500_2026_P03_-_published.xlsx,2001,2026-06-10,MAISHA STAFFING SOLUTIONS LTD,18130.25,Children's Social Care,Private Contractors
+T-04.7,5,MAISHA STAFFING SOLUTIONS,Over500_2026_P04_-_published.xlsx:3716,Over500_2026_P04_-_published.xlsx,3716,2026-07-29,MAISHA STAFFING SOLUTIONS LTD,11100.0,Children's Social Care,Allowances for provision care
+T-04.7,5,MAISHA STAFFING SOLUTIONS,Over500_2026_P04_-_published.xlsx:3897,Over500_2026_P04_-_published.xlsx,3897,2026-07-30,MAISHA STAFFING SOLUTIONS LTD,8900.0,Children's Social Care,Allowances for provision care

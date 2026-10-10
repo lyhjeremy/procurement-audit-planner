@@ -72,7 +72,7 @@ contract-rules.pdf ──► /extract-rules (skill) ──► rules.json
                                │ risk-register.md, auditor-comments.md
                                ▼
               HUMAN GATE: auditor approves, amends or rejects each risk
-                               │ risk-assessor re-runs: register revision 1
+                               │ risk-assessor re-runs: one register revision per round
                                ▼
      agent team: planner ◄──► challenger, planner ◄──► qa-reviewer
      (audit-program skill)   (challenges.md)        (4 check scripts, review.md)
@@ -99,14 +99,14 @@ sends `QA vN: PASS/FAIL`; each ends with a DONE message to the lead.
 
 | Stage | Result |
 |---|---|
-| Rules | 65 testable rules, 99 excluded clauses, 4 statutory thresholds left null because the PDF only names them |
+| Rules | 66 testable rules, 98 excluded clauses, 4 statutory thresholds left null because the PDF only names them. 65 came from the skill; clause 1.6.2 (a grant is a contract) was added as CPR-66 at the second gate round |
 | Spend | 10,607 payments read, 8,534 kept after excluding pension, inter-authority and redacted-payee rows; 7 indicator tests |
 | History | 20 audit entries (16 audits, 3 follow-ups, 1 advisory review) with their opinions, including Limited on Personal Budgets (Direct Payments); 10 risk themes; the council's 5x5 scoring method; 13 discrepancies in the papers |
 | Register | 10 risks rated; the builder marks, without resolving, the conflict between Figure 4 (corporate register at 9 or above) and Table 4 (15 or above) |
-| Gate | Jeremy Lee approved 8, amended R-01 into scope and rejected R-10; revision 1 |
-| Team | 3 pack versions, 12 challenges over 2 rounds (11 resolved, 1 for the auditor), QA verdict READY FOR SIGN-OFF with 4 of 4 checks passing |
-| Pack | 9 risks, 11 controls, 17 tests, 229 sampled payments, each traced to its row in the published workbooks; 36 of 65 rules cited and the other 29 listed as not tested with a reason |
-| Sign-off | Signed off on 2026-10-06, with the open rating point (challenge #2) noted |
+| Gate | Two rounds by Jeremy Lee. 2026-10-06: approved 8, amended R-01 into scope, rejected R-10 (revision 1). 2026-10-09: amended R-04 to add grants and agency staff, excluded premises (revision 2) |
+| Team | Final run on revision 2: 3 pack versions, 8 challenges over 2 rounds (all resolved, none for the auditor), the three agents messaging each other directly; QA verdict READY FOR SIGN-OFF with 4 of 4 checks passing |
+| Pack | 9 risks, 12 controls, 24 tests, 289 sampled payments, each traced to its row in the published workbooks; 39 of 66 rules cited and the other 27 listed as not tested with a reason |
+| Sign-off | Signed off on 2026-10-09, with two questions noted for the council at fieldwork |
 
 The outputs are all in `outputs/`. Start with
 [outputs/planning-memo.md](outputs/planning-memo.md).
@@ -119,16 +119,87 @@ sub-agents 3.1 to 3.7, the human gate 4.1 to 4.3 and agent teams 5.1 to 5.8.
 and the file that shows it, and the guide's prompts are saved in
 `docs/guide-prompts/`.
 
-Three things differ from a plain run of the guide, and the step list says so.
+Four things differ from a plain run of the guide, and the step list says so.
 The `risk-assessment` skill (step 3.5) has no finished file in the guide, so
 we wrote it from the guide's prompt. The step 1.2 follow-up question was
 asked during the final review rather than straight after step 1.2
-([docs/step-1.2-answer.md](docs/step-1.2-answer.md)). And for step 5.7, Claude Code only
-spawns true teammates in an interactive terminal; in the session we used, the
-three team agents ran as sub-agents and the lead delivered their protocol
-messages unchanged ([docs/team-messages.md](docs/team-messages.md)). The
-deployed harness runs them as named sub-agents that message each other
-directly.
+([docs/step-1.2-answer.md](docs/step-1.2-answer.md)). Rule CPR-66 was added to
+`rules.json` by hand at the auditor's direction (see below), and
+`verify_quotes.py` passes with it. And for step 5.7, Claude Code's
+interactive agent-team mode needs an interactive terminal; in the session we
+used, the three team agents ran as background agents from their files and
+messaged each other directly with SendMessage, the same way the deployed
+harness runs them ([docs/team-messages.md](docs/team-messages.md)).
+
+## Auditor judgment and reflection
+
+### Gate decisions and why
+
+First round (2026-10-06):
+
+| Risk | Decision | Reason |
+|---|---|---|
+| R-01, quotes not sought just below the thresholds | amend: bring into scope | Threshold-hugging at the £25,000 quote boundary is a standard test and cheap to sample; the rating stays |
+| R-10, contract register incomplete | reject | R-04 reconciles unmatched suppliers to the contract register, which already tests its completeness |
+| R-02 to R-09 | approve | Ratings and evidence accepted as written |
+
+Second round (2026-10-09): R-04 amended. A teammate's independent build of
+the same guide (Neil Doungsaeng, https://github.com/neiltd/procurement-audit-planner)
+kept grants in scope where ours left them out. Clause 1.6.2 lists "Providing
+funding or a grant to an external organisation" as entering a contract, so
+grant spend falls under the Rules. Our first register excluded grants only
+because the extract-rules skill files definitions as untestable, which left
+no rule ID to cite. The guide's own spend-analyst file says the opposite
+("clause 1.6.2 treats a grant as a contract. Cite these by `rule_id`"). We
+added 1.6.2 as CPR-66 and brought into R-04 the 123 grant suppliers and the 1
+agency-staff supplier with no live contract notice. Agency staff is a bought
+service. Premises costs (rent, rates, leases) stay out because they are
+property costs, not purchases under the Rules, and the register now says so.
+R-04's rating did not move (3 x 5 = 15).
+
+### Sign-off
+
+The first pack was signed off on 2026-10-06 with challenge #2 (R-03
+likelihood) noted and not taken up: R-03 was already in scope, and T-04.2
+tested the Appendix A approval for unmatched suppliers above the Key Decision
+threshold, so a higher score would not have changed the fieldwork. The final
+pack was signed off on 2026-10-09 with no challenge left for the auditor. Two
+questions go to the council at fieldwork: whether the DSG-funded early-years
+payments sampled in T-04.4 and T-04.5 are grants under CPR-66 or statutory
+allocations, and whether the council's list of children's direct payments
+used in T-09.3 is complete.
+
+### What the human gate changed
+
+- R-01 entered scope, which added a threshold-hugging test.
+- R-10 was folded into R-04 instead of being planned twice.
+- The second round put £5.87M of grant spend (123 suppliers) and £1.28M of
+  agency-staff spend under test. The rebuilt pack has 7 more tests (24 against
+  17) and 60 more sampled payments (289 against 229).
+
+### What we would do differently
+
+- Read every skill and agent file against the others before the first run.
+  The 1.6.2 conflict sat between two of the guide's own files and only
+  showed up when a second build disagreed with ours.
+- Compare with an independent build earlier. Two people building the same
+  guide disagreed on scope, and that disagreement found the gap.
+- Have each teammate send its DONE message to the other two as well as to the
+  lead. In our final run the qa-reviewer waited for DONE messages that had
+  gone only to the lead, so the lead had to tell it both had finished. The
+  deployed harness already nudges a lead that goes quiet, for a similar
+  reason.
+
+### Part A compared with Part B
+
+Part A was built and run step by step in one Claude Code session, with the
+person at the keyboard making both gate decisions in files. Part B runs the
+same `CLAUDE.md`, skills and agents unchanged through the Claude Agent SDK,
+one stage at a time, with the two gates as web forms, a passcode and a
+spending cap. A full Part B run cost about $4.45. Part B starts each run from
+the guide's skills, so its extract-rules stage files clause 1.6.2 as a
+definition again; the auditor at the gate decides how grants are treated,
+as we did in round two.
 
 ## Part B: the deployed harness
 

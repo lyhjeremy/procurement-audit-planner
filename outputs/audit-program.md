@@ -1,10 +1,10 @@
 # Audit program
 
-*Generated 2026-10-06 by `build_pack.py` from `audit-plan.json`, `risk-register.md` (revision 1), `auditor-comments.md` by Jeremy Lee dated 2026-10-06, `rules.json` and `analytics.json`. Status: DRAFT for challenge, QA review and auditor sign-off.*
+*Generated 2026-10-09 by `build_pack.py` from `audit-plan.json`, `risk-register.md` (revision 2), `auditor-comments.md` by Jeremy Lee dated 2026-10-09, `rules.json` and `analytics.json`. Status: DRAFT for challenge, QA review and auditor sign-off.*
 
 **Indicators, not findings.** Every test below checks a control against a pattern in public data. Nothing here asserts wrongdoing by the council, a department, an officer or a supplier.
 
-9 risks in scope, 11 controls, 17 tests, 229 sampled transactions. Samples are drawn by the builder from `analytics-full/` by the recipe stated under each test, and every transaction is listed with its workbook row.
+9 risks in scope, 12 controls, 24 tests, 289 sampled transactions. Samples are drawn by the builder from `analytics-full/` by the recipe stated under each test, and every transaction is listed with its workbook row.
 
 
 ## R-01: Quotes not sought for payments just below the quotation thresholds [6 (Moderate; Moderate)]
@@ -99,6 +99,31 @@
 | 5 | `Over500_2026_P04_-_published.xlsx:601` | 2026-07-13 | Roadside Technologies Ltd | £9,103.64 | Environment |
 | 5 | `Over500_2026_P04_-_published.xlsx:740` | 2026-07-13 | Roadside Technologies Ltd | £9,103.64 | Environment |
 
+**T-02.3. Test.** For every grant window, where payments to one grant recipient each under the three-quote threshold together reach it within the window, obtain the grant agreements and payment schedule behind the payments and establish whether they relate to one grant. Where they do, confirm the grant was awarded by the route its combined value required under the Rules, which treat a grant as a contract. Where they do not, record the separate grants. A pass is either separate grants or one grant awarded under the correct route. The population is small, so it is tested in full. [CPR-10, CPR-66, metric:$.tests.split_purchases.per_threshold[0].by_tag.grant.windows]  
+**Evidence to inspect:** Grant agreements, payment schedules, grant award decisions, waiver approval  
+**Sample:** 6 items from `split-purchases.csv`, where threshold = 25000, tag = grant, largest total_gbp first, largest 5 payments per item; 18 transactions
+
+| # | Row ID | Date | Supplier | Amount | Service |
+|---|---|---|---|---|---|
+| 1 | `Over500_2026_P03_-_published.xlsx:609` | 2026-06-30 | PANGBOURNE DAY NURSERY | £21,934.94 | Education (DSG Funded) & Other Education Grants |
+| 1 | `Over500_2026_P04_-_published.xlsx:567` | 2026-07-27 | PANGBOURNE DAY NURSERY | £21,934.93 | Education (DSG Funded) & Other Education Grants |
+| 2 | `Over500_2026_P04_-_published.xlsx:1273` | 2026-07-14 | THE NEWBURY COMMUNITY RESOURCE CENTRE LTD | £8,333.33 | Development & Housing |
+| 2 | `Over500_2026_P04_-_published.xlsx:773` | 2026-07-14 | THE NEWBURY COMMUNITY RESOURCE CENTRE LTD | £8,333.33 | Development & Housing |
+| 2 | `Over500_2026_P04_-_published.xlsx:3193` | 2026-07-14 | THE NEWBURY COMMUNITY RESOURCE CENTRE LTD | £7,027.35 | Environment |
+| 2 | `Over500_2026_P03_-_published.xlsx:2097` | 2026-06-16 | THE NEWBURY COMMUNITY RESOURCE CENTRE LTD | £6,264.00 | Education & SEND |
+| 2 | `Over500_2026_P04_-_published.xlsx:874` | 2026-07-01 | THE NEWBURY COMMUNITY RESOURCE CENTRE LTD | £1,632.48 | Adult Social Care |
+| 3 | `Over500_2026_P03_-_published.xlsx:611` | 2026-06-30 | MRS M ALSBURY | £13,393.22 | Education (DSG Funded) & Other Education Grants |
+| 3 | `Over500_2026_P04_-_published.xlsx:1184` | 2026-07-27 | MRS M ALSBURY | £13,393.21 | Education (DSG Funded) & Other Education Grants |
+| 3 | `Over500_2026_P03_-_published.xlsx:622` | 2026-06-30 | MRS M ALSBURY | £2,482.92 | Education (DSG Funded) & Other Education Grants |
+| 4 | `Over500_2026_P03_-_published.xlsx:601` | 2026-06-17 | PIED PIPER PRE-SCHOOL | £23,073.34 | Education (DSG Funded) & Other Education Grants |
+| 4 | `Over500_2026_P03_-_published.xlsx:2094` | 2026-06-30 | PIED PIPER PRE-SCHOOL | £1,435.10 | Education (DSG Funded) & Other Education Grants |
+| 4 | `Over500_2026_P04_-_published.xlsx:763` | 2026-07-02 | PIED PIPER PRE-SCHOOL | £800.00 | Education (DSG Funded) & Other Education Grants |
+| 4 | `Over500_2026_P04_-_published.xlsx:702` | 2026-07-03 | PIED PIPER PRE-SCHOOL | £800.00 | Education (DSG Funded) & Other Education Grants |
+| 5 | `Over500_2026_P03_-_published.xlsx:2074` | 2026-06-17 | BEANSHEAF COMMUNITY PRE-SCHOO | £24,705.36 | Education (DSG Funded) & Other Education Grants |
+| 5 | `Over500_2026_P04_-_published.xlsx:1261` | 2026-07-02 | BEANSHEAF COMMUNITY PRE-SCHOO | £1,000.00 | Education (DSG Funded) & Other Education Grants |
+| 6 | `Over500_2026_P03_-_published.xlsx:583` | 2026-06-30 | MALLARD COTTAGE CHILDCARE | £12,502.47 | Education (DSG Funded) & Other Education Grants |
+| 6 | `Over500_2026_P04_-_published.xlsx:569` | 2026-07-27 | MALLARD COTTAGE CHILDCARE | £12,502.46 | Education (DSG Funded) & Other Education Grants |
+
 
 ## R-03: High-value awards made without Key Decision or the approvals in Appendix A [10 (High; Medium - High)]
 
@@ -106,8 +131,8 @@
 
 **C-03.1. Expected control.** Awards above the Key Decision threshold are treated as Key Decisions and follow the Appendix A route for their value band: S151 Officer and Monitoring Officer recommendation, a board-approved written report and, at the top band, Executive approval. [CPR-02, CPR-50, CPR-51, CPR-52] Owner: Relevant Service Director.
 
-**T-03.1. Test.** For each general-procurement window where payments each under the Key Decision threshold together reach it, obtain the contract the sampled payments, and the rest of the window, relate to and its award approval. Confirm the award value, whether it was recorded as a Key Decision, and that the Appendix A approvals for its value band are on file before award. [CPR-02, CPR-51, metric:$.tests.split_purchases.per_threshold[1].headline_general_procurement.windows]  
-**Evidence to inspect:** Contract, award report, Key Decision record and Forward Plan entry, S151 and Monitoring Officer recommendations, board approval  
+**T-03.1. Test.** For each general-procurement window where payments each under the Key Decision threshold together reach it, obtain the contract the sampled payments, and the rest of the window, relate to and its award approval. Confirm the award value, whether it was recorded as a Key Decision, and that the Appendix A approvals for its value band are on file before award. Confirm the contract is in writing in a form approved by the Monitoring Officer; for a works or time-bound contract above the Key Decision threshold where no performance bond was taken, confirm the written risk assessment and the Service Director for Finance and Property's approval are on the contract file. [CPR-30, CPR-40, CPR-02, CPR-51, metric:$.tests.split_purchases.per_threshold[1].headline_general_procurement.windows]  
+**Evidence to inspect:** Contract, award report, Key Decision record and Forward Plan entry, S151 and Monitoring Officer recommendations, board approval, contract file with performance bond or risk assessment  
 **Sample:** 2 items from `split-purchases.csv`, where threshold = 500000, tag = general_procurement, largest total_gbp first, largest 5 payments per item, (only 2 available); 9 transactions
 
 | # | Row ID | Date | Supplier | Amount | Service |
@@ -122,8 +147,8 @@
 | 2 | `Over500_2026_P02_-_published.xlsx:653` | 2026-05-27 | SoftwareONE UK Ltd | £59,650.56 | Transformation, Customer & ICT |
 | 2 | `Over500_2026_P02_-_published.xlsx:654` | 2026-05-27 | SoftwareONE UK Ltd | £1,759.34 | Transformation, Customer & ICT |
 
-**T-03.2. Test.** For the general-procurement suppliers matched to a published notice whose annualised estimate is at or above the Key Decision threshold, trace the award in the notice to its approval: Key Decision record where the award value requires one, the board-approved written report and the recommendations Appendix A requires. Confirm the approvals predate the award date. [CPR-50, CPR-51, CPR-52, metric:$.tests.off_contract.per_match_class.exact.suppliers]  
-**Evidence to inspect:** Contract award notice, award report, Key Decision record, board minutes, Executive approval where the value requires it  
+**T-03.2. Test.** For the general-procurement suppliers matched to a published notice whose annualised estimate is at or above the Key Decision threshold, trace the award in the notice to its approval: Key Decision record where the award value requires one, the board-approved written report and the recommendations Appendix A requires. Confirm the approvals predate the award date. Confirm the contract is in writing in a form approved by the Monitoring Officer; for a works or time-bound contract above the Key Decision threshold where no performance bond was taken, confirm the written risk assessment and the Service Director for Finance and Property's approval are on the contract file. [CPR-30, CPR-40, CPR-50, CPR-51, CPR-52, metric:$.tests.off_contract.per_match_class.exact.suppliers]  
+**Evidence to inspect:** Contract award notice, award report, Key Decision record, board minutes, Executive approval where the value requires it, contract file with performance bond or risk assessment  
 **Sample:** 7 items from `off-contract.csv`, where match_class = exact, dominant_tag = general_procurement, annualised estimate ≥ 500000, largest annualised estimate first, 2 payments per supplier, (only 7 available); 13 transactions
 
 | # | Row ID | Date | Supplier | Amount | Service |
@@ -145,17 +170,17 @@
 
 ## R-04: Spend above the quotation threshold with no published contract notice [15 (Extreme; Extreme)]
 
-**Audit objective.** Conclude whether general-procurement suppliers paid at or above the three-quote threshold on an annualised basis are covered by a recorded contract that was competed and published as the Rules require.
+**Audit objective.** Conclude whether general-procurement, grant and agency-staff suppliers paid at or above the three-quote threshold on an annualised basis are covered by a recorded contract or grant agreement that was let and published as the Rules require.
 
 **C-04.1. Expected control.** Every award is notified to the Service Lead for Commissioning and Procurement and recorded on the council's contract register, which is published with value, duration and supplier. [CPR-05, CPR-32] Owner: Service Lead for Commissioning and Procurement.
 
-**T-04.1. Test.** Obtain the council's contract register as at the end of the spend window and reconcile it to the full list of unmatched general-procurement suppliers in the flagged list, confirming the near-name matches first. Record each supplier as covered by a register entry, covered by a framework or another buyer's contract, or not on the register. A pass is a register entry for each supplier with live spend. [CPR-05, CPR-32, metric:$.tests.off_contract.unmatched_general_procurement.suppliers, metric:$.matching.near_contain]  
-**Evidence to inspect:** Contract register extract, near-match list, framework access agreements  
-**Sample:** population reconciliation of every unmatched general-procurement supplier in off-contract.csv against the council's contract register, near matches first; no transaction sample
+**T-04.1. Test.** Obtain the council's contract register as at the end of the spend window and its record of grant agreements, and reconcile them to the full lists of unmatched general-procurement, grant and agency-staff suppliers in the flagged list, confirming the near-name matches first. Record each supplier as covered by a register entry or grant agreement, covered by a framework or another buyer's contract, or not on the register. A pass is a register entry or grant agreement for each supplier with live spend. Premises suppliers are left out on the auditor's decision. [CPR-05, CPR-32, CPR-66, metric:$.tests.off_contract.unmatched_by_dominant_tag.general_procurement.suppliers, metric:$.tests.off_contract.unmatched_by_dominant_tag.grant.suppliers, metric:$.tests.off_contract.unmatched_by_dominant_tag.agency_staff.suppliers, metric:$.matching.near_contain]  
+**Evidence to inspect:** Contract register extract, grant agreement record, near-match list, framework access agreements  
+**Sample:** population reconciliation of every unmatched general-procurement, grant and agency-staff supplier in off-contract.csv against the council's contract register and grant agreements, near matches first; no transaction sample
 
 **C-04.2. Expected control.** Spend at or above the three-quote threshold is let through the Procurement Portal with the quotes or tenders its value requires, a published notice approved by the Service Lead, or a recorded framework call-off or approved waiver. [CPR-54, CPR-55, CPR-56, CPR-04, CPR-07, CPR-09, CPR-60] Owner: Relevant Service Director.
 
-**T-04.2. Test.** For each sampled supplier, obtain the record behind the spend: the quotation or tender run through the Procurement Portal with its evaluation against notified criteria and its published notice, or the framework call-off with Monitoring Officer approval, or the approved waiver. Confirm the award was made by the officer Appendix A names for its value: the relevant Service Director or a nominated officer below the Threshold, and the Appendix A approval where the value passes the Key Decision threshold. A pass is a record whose route matches the annualised value. A sampled supplier that T-04.1 finds on the contract register is replaced by the next supplier in the same recipe order. Payees matching the analytics' inter-authority pattern are excluded because payments to public bodies are not competed purchases. [CPR-54, CPR-15, CPR-16, CPR-60, CPR-49, CPR-51, metric:$.tests.off_contract.unmatched_general_procurement.annualised_estimate_gbp]  
+**T-04.2. Test.** For each sampled supplier, obtain the record behind the spend: the quotation or tender run through the Procurement Portal with its evaluation against notified criteria and its published notice, or the framework call-off with Monitoring Officer approval, or the approved waiver. Confirm the award was made by the officer Appendix A names for its value: the relevant Service Director or a nominated officer below the Threshold, and the Appendix A approval where the value passes the Key Decision threshold. A pass is a record whose route matches the annualised value. A sampled supplier that T-04.1 finds on the contract register is replaced by the next supplier in the same recipe order. Payees matching the analytics' inter-authority pattern are excluded because payments to public bodies are not competed purchases. [CPR-54, CPR-15, CPR-16, CPR-60, CPR-49, CPR-51, metric:$.tests.off_contract.unmatched_by_dominant_tag.general_procurement.annualised_estimate_gbp]  
 **Evidence to inspect:** Portal quotation or tender record, evaluation and award decision, contract notice, framework call-off and approval, waiver approval  
 **Sample:** 5 items from `off-contract.csv`, where match_class = none, dominant_tag = general_procurement, largest annualised estimate first, 3 payments per supplier, excluding supplier matching /\b(?:COUNCIL|BOROUGH|COUNTY|CNCL|NHS|POLICE|FIRE AUTHORITY|FIRE AND RESCUE|HMRC|HM REVENUE|DEPARTMENT FOR|MINISTRY OF)\b/; 15 transactions
 
@@ -177,7 +202,7 @@
 | 5 | `Over500_2026_P02_-_published.xlsx:474` | 2026-05-27 | SoftwareONE UK Ltd | £85,871.04 | Transformation, Customer & ICT |
 | 5 | `Over500_2026_P02_-_published.xlsx:653` | 2026-05-27 | SoftwareONE UK Ltd | £59,650.56 | Transformation, Customer & ICT |
 
-**T-04.3. Test.** For each sampled supplier in the lower band, between the three-quote threshold and four times it on an annualised basis, where awards are least likely to predate the notice export, obtain the record behind the spend: the quotation or tender run through the Procurement Portal with its evaluation against notified criteria and its published notice, or the framework call-off with Monitoring Officer approval, or the approved waiver. Confirm the award was made by the officer Appendix A names for its value: the relevant Service Director or a nominated officer below the Threshold, and the Appendix A approval where the value passes the Key Decision threshold. A pass is a record whose route matches the annualised value. A sampled supplier that T-04.1 finds on the contract register is replaced by the next supplier in the same recipe order. Payees matching the analytics' inter-authority pattern are excluded because payments to public bodies are not competed purchases. Trust and fundraising accounts paid as care allowances are also excluded, as they are not purchases of goods or services. [CPR-54, CPR-15, CPR-16, CPR-60, CPR-49, CPR-51, metric:$.tests.off_contract.unmatched_general_procurement.annualised_estimate_gbp]  
+**T-04.3. Test.** For each sampled supplier in the lower band, between the three-quote threshold and four times it on an annualised basis, where awards are least likely to predate the notice export, obtain the record behind the spend: the quotation or tender run through the Procurement Portal with its evaluation against notified criteria and its published notice, or the framework call-off with Monitoring Officer approval, or the approved waiver. Confirm the award was made by the officer Appendix A names for its value: the relevant Service Director or a nominated officer below the Threshold, and the Appendix A approval where the value passes the Key Decision threshold. A pass is a record whose route matches the annualised value. A sampled supplier that T-04.1 finds on the contract register is replaced by the next supplier in the same recipe order. Payees matching the analytics' inter-authority pattern are excluded because payments to public bodies are not competed purchases. Trust and fundraising accounts paid as care allowances are also excluded, as they are not purchases of goods or services. [CPR-54, CPR-15, CPR-16, CPR-60, CPR-49, CPR-51, metric:$.tests.off_contract.unmatched_by_dominant_tag.general_procurement.annualised_estimate_gbp]  
 **Evidence to inspect:** Portal quotation or tender record, evaluation and award decision, contract notice, framework call-off and approval, waiver approval  
 **Sample:** 5 items from `off-contract.csv`, where match_class = none, dominant_tag = general_procurement, annualised estimate ≥ 25000, annualised estimate ≤ 100000, largest annualised estimate first, 3 payments per supplier, excluding supplier matching /\b(?:COUNCIL|BOROUGH|COUNTY|CNCL|NHS|POLICE|FIRE AUTHORITY|FIRE AND RESCUE|HMRC|HM REVENUE|DEPARTMENT FOR|MINISTRY OF)\b|FUNDRAISING/; 13 transactions
 
@@ -196,6 +221,85 @@
 | 5 | `Over500_2026_P04_-_published.xlsx:173` | 2026-07-29 | 1st Transport Innovation Reading Ltd T/A 5 Star Cars & Reading Central Cars | £2,849.50 | Education & SEND |
 | 5 | `Over500_2026_P04_-_published.xlsx:343` | 2026-07-27 | 1st Transport Innovation Reading Ltd T/A 5 Star Cars & Reading Central Cars | £2,486.00 | Education & SEND |
 | 5 | `Over500_2026_P03_-_published.xlsx:329` | 2026-06-09 | 1st Transport Innovation Reading Ltd T/A 5 Star Cars & Reading Central Cars | £2,224.00 | Education & SEND |
+
+**T-04.6. Test.** For the unmatched agency-staff supplier, obtain the contract or framework call-off under which the agency staff were bought, with its quotation or tender record through the Procurement Portal or the Monitoring Officer's approval of the call-off, or the approved waiver. Confirm the award was made by the officer Appendix A names for its value. Then match the sampled payments to timesheets or invoices under that arrangement. A pass is a recorded arrangement whose route matches the annualised value and covers the sampled payments. The flagged population is a single supplier, so it is tested in full. [CPR-54, CPR-60, CPR-49, metric:$.tests.off_contract.unmatched_by_dominant_tag.agency_staff.annualised_estimate_gbp]  
+**Evidence to inspect:** Agency contract or framework call-off and approval, Portal quotation or tender record, waiver approval, invoices and timesheets for the sampled payments  
+**Sample:** 1 item from `off-contract.csv`, where match_class = none, dominant_tag = agency_staff, largest annualised estimate first, 10 payments per supplier, (only 1 available); 10 transactions
+
+| # | Row ID | Date | Supplier | Amount | Service |
+|---|---|---|---|---|---|
+| 1 | `Over500_2026_P03_-_published.xlsx:9` | 2026-06-15 | Comensura Ltd | £107,880.99 | Strategy & Governance |
+| 1 | `Over500_2026_P02_-_published.xlsx:5` | 2026-05-12 | Comensura Ltd | £104,728.31 | Strategy & Governance |
+| 1 | `Over500_2026_P04_-_published.xlsx:19` | 2026-07-31 | Comensura Ltd | £103,047.79 | Strategy & Governance |
+| 1 | `Over500_2026_P03_-_published.xlsx:12` | 2026-06-08 | Comensura Ltd | £101,567.70 | Strategy & Governance |
+| 1 | `Over500_2026_P04_-_published.xlsx:6` | 2026-07-15 | Comensura Ltd | £100,668.47 | Strategy & Governance |
+| 1 | `Over500_2026_P02_-_published.xlsx:7` | 2026-05-27 | Comensura Ltd | £96,142.42 | Strategy & Governance |
+| 1 | `Over500_2026_P03_-_published.xlsx:11` | 2026-06-22 | Comensura Ltd | £94,539.37 | Strategy & Governance |
+| 1 | `Over500_2026_P04_-_published.xlsx:9` | 2026-07-01 | Comensura Ltd | £91,647.16 | Strategy & Governance |
+| 1 | `Over500_2026_P04_-_published.xlsx:8` | 2026-07-27 | Comensura Ltd | £87,820.18 | Strategy & Governance |
+| 1 | `Over500_2026_P03_-_published.xlsx:10` | 2026-06-16 | Comensura Ltd | £84,878.50 | Strategy & Governance |
+
+**T-04.7. Test.** For each sampled supplier in the middle band, above four times the three-quote threshold and below the Key Decision threshold on an annualised basis, where Appendix A row 2 requires a board-approved report, obtain the record behind the spend: the quotation or tender run through the Procurement Portal with its evaluation against notified criteria and its published notice, or the framework call-off with Monitoring Officer approval, or the approved waiver. Confirm the award was made by the officer Appendix A names for its value: the relevant Service Director or a nominated officer below the Threshold, and the Appendix A approval where the value passes the Key Decision threshold. A pass is a record whose route matches the annualised value. A sampled supplier that T-04.1 finds on the contract register is replaced by the next supplier in the same recipe order. Payees matching the analytics' inter-authority pattern are excluded because payments to public bodies are not competed purchases. Trust and fundraising accounts paid as care allowances are also excluded, as they are not purchases of goods or services. [CPR-54, CPR-15, CPR-16, CPR-60, CPR-49, CPR-51, metric:$.tests.off_contract.unmatched_by_dominant_tag.general_procurement.annualised_estimate_gbp, CPR-50]  
+**Evidence to inspect:** Portal quotation or tender record, evaluation and award decision, contract notice, framework call-off and approval, waiver approval  
+**Sample:** 5 items from `off-contract.csv`, where match_class = none, dominant_tag = general_procurement, annualised estimate ≥ 100000.01, annualised estimate ≤ 499999.99, largest annualised estimate first, 3 payments per supplier, excluding supplier matching /\b(?:COUNCIL|BOROUGH|COUNTY|CNCL|NHS|POLICE|FIRE AUTHORITY|FIRE AND RESCUE|HMRC|HM REVENUE|DEPARTMENT FOR|MINISTRY OF)\b|FUNDRAISING/, excluding suppliers and rows already drawn in T-04.2, T-04.3; 13 transactions
+
+| # | Row ID | Date | Supplier | Amount | Service |
+|---|---|---|---|---|---|
+| 1 | `Over500_2026_P03_-_published.xlsx:479` | 2026-06-29 | KPMG | £76,405.00 | Executive Director - Resources |
+| 1 | `Over500_2026_P02_-_published.xlsx:655` | 2026-05-19 | KPMG | £34,250.00 | Finance, Property & Procurement |
+| 1 | `Over500_2026_P02_-_published.xlsx:568` | 2026-05-29 | KPMG | £8,500.00 | Executive Director - Resources |
+| 2 | `Over500_2026_P03_-_published.xlsx:730` | 2026-06-23 | SCOTTISH & SOUTHERN | £101,258.24 | Environment |
+| 2 | `Over500_2026_P04_-_published.xlsx:1282` | 2026-07-03 | SCOTTISH & SOUTHERN | £9,502.74 | Education & SEND |
+| 3 | `Over500_2026_P02_-_published.xlsx:478` | 2026-05-20 | Education Software Solutions Limited | £95,536.35 | Transformation, Customer & ICT |
+| 3 | `Over500_2026_P02_-_published.xlsx:479` | 2026-05-20 | Education Software Solutions Limited | £14,794.00 | Transformation, Customer & ICT |
+| 4 | `Over500_2026_P02_-_published.xlsx:178` | 2026-05-27 | Continental Landscapes Ltd | £67,604.74 | Environment |
+| 4 | `Over500_2026_P02_-_published.xlsx:198` | 2026-05-27 | Continental Landscapes Ltd | £12,437.95 | Environment |
+| 4 | `Over500_2026_P02_-_published.xlsx:180` | 2026-05-27 | Continental Landscapes Ltd | £12,396.75 | Environment |
+| 5 | `Over500_2026_P03_-_published.xlsx:2001` | 2026-06-10 | MAISHA STAFFING SOLUTIONS LTD | £18,130.25 | Children's Social Care |
+| 5 | `Over500_2026_P04_-_published.xlsx:3716` | 2026-07-29 | MAISHA STAFFING SOLUTIONS LTD | £11,100.00 | Children's Social Care |
+| 5 | `Over500_2026_P04_-_published.xlsx:3897` | 2026-07-30 | MAISHA STAFFING SOLUTIONS LTD | £8,900.00 | Children's Social Care |
+
+**C-04.3. Expected control.** Funding or a grant to an external organisation is treated as a contract under the Rules: it is awarded by the route its value requires, or under a documented waiver or exception approved by the S151 Officer, and recorded on the contract register. [CPR-66, CPR-54, CPR-05, CPR-24] Owner: Relevant Service Director.
+
+**T-04.4. Test.** The sample takes the largest unmatched grant supplier in each service; only three services hold unmatched grant suppliers, so T-04.8 fills the stratum to five. For each sampled grant supplier, obtain the grant agreement and the award record behind the sampled payments. Confirm the grant was awarded by the route the Rules require for its value, treating it as a contract, or under a documented waiver or exception with the S151 Officer's recorded approval, and that it is on the contract register. Ask the council whether payments to early-years providers from the DSG-funded education grants service are grants to an external organisation within the Rules or statutory funding allocations, and record the answer; where they are statutory allocations, replace the supplier with the next supplier from another service. A pass is a grant agreement whose award route matches the annualised value. A sampled supplier that T-04.1 finds on the register is replaced by the next supplier in the same recipe order. Public-body payees are kept in this sample because a grant to an external organisation falls within the Rules whoever receives it. [CPR-66, CPR-54, CPR-24, CPR-05, metric:$.tests.off_contract.unmatched_by_dominant_tag.grant.annualised_estimate_gbp]  
+**Evidence to inspect:** Grant agreement, grant award report or decision, quotation or competition record where held, waiver approval, contract register entry  
+**Sample:** 3 items from `off-contract.csv`, where match_class = none, dominant_tag = grant, largest annualised estimate first, 3 payments per supplier, one item per top_service, (only 3 available); 7 transactions
+
+| # | Row ID | Date | Supplier | Amount | Service |
+|---|---|---|---|---|---|
+| 1 | `Over500_2026_P03_-_published.xlsx:511` | 2026-06-17 | JUBILEE DAY NURSERY | £400,824.68 | Education (DSG Funded) & Other Education Grants |
+| 1 | `Over500_2026_P03_-_published.xlsx:623` | 2026-06-30 | JUBILEE DAY NURSERY | £6,769.87 | Education (DSG Funded) & Other Education Grants |
+| 1 | `Over500_2026_P04_-_published.xlsx:703` | 2026-07-03 | JUBILEE DAY NURSERY | £1,000.00 | Education (DSG Funded) & Other Education Grants |
+| 2 | `Over500_2026_P03_-_published.xlsx:2099` | 2026-06-29 | BERKS FOODBANK | £51,340.00 | Development & Housing |
+| 2 | `Over500_2026_P03_-_published.xlsx:2100` | 2026-06-30 | BERKS FOODBANK | £50,000.00 | Development & Housing |
+| 2 | `Over500_2026_P02_-_published.xlsx:637` | 2026-05-26 | BERKS FOODBANK | £10,000.00 | Development & Housing |
+| 3 | `Over500_2026_P04_-_published.xlsx:1271` | 2026-07-06 | WEST BERKSHIRE TRAINING CONSORTIUM | £22,963.98 | Education & SEND |
+
+**T-04.5. Test.** Same step as T-04.4, for grant suppliers in the lower band, between the three-quote threshold and four times it on an annualised basis, where an award is least likely to predate the notice export. Obtain the grant agreement and award record, and confirm the award route matches the value or a waiver approved by the S151 Officer covers it, and that the grant is on the contract register. Apply the T-04.4 question on DSG-funded provider payments and replace any supplier the council treats as a statutory allocation. A pass is a grant agreement whose award route matches the annualised value. A supplier found on the register in T-04.1 is replaced by the next in recipe order. [CPR-66, CPR-54, CPR-24, CPR-05, metric:$.tests.off_contract.unmatched_by_dominant_tag.grant.annualised_estimate_gbp]  
+**Evidence to inspect:** Grant agreement, grant award report or decision, quotation or competition record where held, waiver approval, contract register entry  
+**Sample:** 5 items from `off-contract.csv`, where match_class = none, dominant_tag = grant, annualised estimate ≥ 25000, annualised estimate ≤ 100000, largest annualised estimate first, 3 payments per supplier, excluding suppliers and rows already drawn in T-04.4; 9 transactions
+
+| # | Row ID | Date | Supplier | Amount | Service |
+|---|---|---|---|---|---|
+| 1 | `Over500_2026_P03_-_published.xlsx:2056` | 2026-06-17 | CHARMAINE CAULFIELD | £24,850.39 | Education (DSG Funded) & Other Education Grants |
+| 2 | `Over500_2026_P03_-_published.xlsx:606` | 2026-06-17 | ST JOHN'S PRE-SCHOOL | £20,223.33 | Education (DSG Funded) & Other Education Grants |
+| 2 | `Over500_2026_P03_-_published.xlsx:557` | 2026-06-30 | ST JOHN'S PRE-SCHOOL | £2,870.64 | Education (DSG Funded) & Other Education Grants |
+| 3 | `Over500_2026_P03_-_published.xlsx:506` | 2026-06-17 | MINI OAKS PRESCHOOL | £22,882.17 | Education (DSG Funded) & Other Education Grants |
+| 4 | `Over500_2026_P04_-_published.xlsx:768` | 2026-07-14 | U KIDS CHILDCARE LIMITED | £8,681.75 | Education & SEND |
+| 4 | `Over500_2026_P04_-_published.xlsx:582` | 2026-07-14 | U KIDS CHILDCARE LIMITED | £5,905.44 | Education & SEND |
+| 4 | `Over500_2026_P04_-_published.xlsx:1268` | 2026-07-14 | U KIDS CHILDCARE LIMITED | £5,905.44 | Education & SEND |
+| 5 | `Over500_2026_P03_-_published.xlsx:500` | 2026-06-17 | JANES HOUSE MONTESSORI / LALATIGS LTD | £19,213.40 | Education (DSG Funded) & Other Education Grants |
+| 5 | `Over500_2026_P03_-_published.xlsx:555` | 2026-06-30 | JANES HOUSE MONTESSORI / LALATIGS LTD | £1,236.35 | Education (DSG Funded) & Other Education Grants |
+
+**T-04.8. Test.** Same step as T-04.4, including the question on DSG-funded provider payments, for the two largest unmatched grant suppliers not drawn in T-04.4 or T-04.5, which fill the largest-first grant stratum to five. A pass is a grant agreement whose award route matches the annualised value. A supplier found on the register in T-04.1 is replaced by the next in recipe order. [CPR-66, CPR-54, CPR-24, CPR-05, metric:$.tests.off_contract.unmatched_by_dominant_tag.grant.annualised_estimate_gbp]  
+**Evidence to inspect:** Grant agreement, grant award report or decision, quotation or competition record where held, waiver approval, contract register entry  
+**Sample:** 2 items from `off-contract.csv`, where match_class = none, dominant_tag = grant, largest annualised estimate first, 3 payments per supplier, excluding suppliers and rows already drawn in T-04.4, T-04.5; 3 transactions
+
+| # | Row ID | Date | Supplier | Amount | Service |
+|---|---|---|---|---|---|
+| 1 | `Over500_2026_P03_-_published.xlsx:2075` | 2026-06-17 | ACRES OF FUN DAY NURSERY AND PRE SCHOOL | £323,872.96 | Education (DSG Funded) & Other Education Grants |
+| 2 | `Over500_2026_P03_-_published.xlsx:525` | 2026-06-17 | ROCKING HORSE DAY NURSERY - NEWBURY RACECOURSE PLC | £317,171.95 | Education (DSG Funded) & Other Education Grants |
+| 2 | `Over500_2026_P03_-_published.xlsx:620` | 2026-06-30 | ROCKING HORSE DAY NURSERY - NEWBURY RACECOURSE PLC | £3,291.55 | Education (DSG Funded) & Other Education Grants |
 
 
 ## R-05: Duplicate or repeated payments of the same amount [9 (High; Medium - High)]
@@ -386,8 +490,8 @@
 
 **C-09.1. Expected control.** The reasons for the choice of provider are recorded on the individual's case notes, and key decisions under the Provider Selection Regime are recorded with its process followed. [CPR-64, CPR-59] Owner: Relevant Service Director.
 
-**T-09.1. Test.** For each sampled placement payment, identify the service user and placement it pays for and inspect the case notes for the recorded reasons for the provider chosen. Where the Provider Selection Regime applies, confirm the key decisions are recorded and its process was followed. A pass is a dated reason on the case notes for the placement paid. [CPR-64, CPR-59, metric:$.population.tags.care_or_education_placement.gbp]  
-**Evidence to inspect:** Case notes, placement agreement, Provider Selection Regime decision record  
+**T-09.1. Test.** For each sampled placement payment, identify the service user and placement it pays for and inspect the case notes for the recorded reasons for the provider chosen. Where the Provider Selection Regime applies, confirm the key decisions are recorded and its process was followed. Where the payment covers more than one placement, obtain the invoice breakdown and test the service user with the largest line, or one the auditor chooses before seeing the case notes, and record how many placements the payment covered. A pass is a dated reason on the case notes for the placement paid. [CPR-64, CPR-59, metric:$.population.tags.care_or_education_placement.gbp]  
+**Evidence to inspect:** Case notes, placement agreement, Provider Selection Regime decision record, invoice breakdown  
 **Sample:** 10 items from `spend-clean.csv`, where tag = care_or_education_placement, largest Net amount first, one item per supplier_norm, excluding suppliers and rows already drawn in T-05.3; 10 transactions
 
 | # | Row ID | Date | Supplier | Amount | Service |
@@ -403,7 +507,7 @@
 | 9 | `Over500_2026_P02_-_published.xlsx:2030` | 2026-05-11 | Spring Valley Children's Care Homes ltd | £58,457.14 | Children's Social Care |
 | 10 | `Over500_2026_P02_-_published.xlsx:2022` | 2026-05-05 | North Star Children's Homes Ltd. | £58,257.61 | Children's Social Care |
 
-**T-09.2. Test.** For each sampled direct payment, confirm the case notes record the reasons for the personalised package and the provider or arrangement chosen, and that the payment matches the agreed personal budget. This stratum tests the theme of the Limited opinion on Personal Budgets (Direct Payments). The spend data identifies direct payments only by the Adult Social Care narrative 'Direct Payment'; direct payments for children cannot be identified in it. [CPR-64, metric:$.population.tags.care_or_education_placement.gbp]  
+**T-09.2. Test.** For each sampled direct payment, confirm the case notes record the reasons for the personalised package and the provider or arrangement chosen, and that the payment matches the agreed personal budget. This stratum covers adult direct payments, the part of the Personal Budgets theme visible in the spend data. The spend data identifies direct payments only by the Adult Social Care narrative 'Direct Payment'; direct payments for children cannot be identified in it. These adult direct payments do not reach the service the Limited opinion covered (Children with Disabilities and SEN Teams); T-09.3 tests that area. [CPR-64, metric:$.population.tags.care_or_education_placement.gbp]  
 **Evidence to inspect:** Case notes, personal budget agreement, direct payment agreement and monitoring record  
 **Sample:** 2 items from `spend-clean.csv`, where Narrative = Direct Payment, largest Net amount first, one item per supplier_norm, (only 2 available); 2 transactions
 
@@ -411,6 +515,10 @@
 |---|---|---|---|---|---|
 | 1 | `Over500_2026_P02_-_published.xlsx:2757` | 2026-05-22 | Solo Support Services | £6,577.72 | Adult Social Care |
 | 2 | `Over500_2026_P02_-_published.xlsx:2688` | 2026-05-20 | CareMatch Ltd | £4,149.72 | Adult Social Care |
+
+**T-09.3. Test.** Obtain the council's list of direct payments made by the Children with Disabilities and SEN Teams in the spend window, the service the Limited opinion on Personal Budgets (Direct Payments) covered. Select five payments from the list, largest first, one per child, before seeing any case notes. For each, confirm the case notes record the reasons for the personalised package and the arrangement chosen, and that the payment matches the agreed personal budget. A pass is a dated reason on the case notes and a payment within the agreed budget. [CPR-64, metric:$.population.tags.care_or_education_placement.gbp]  
+**Evidence to inspect:** Council list of children's direct payments for the window, case notes, personal budget agreement, direct payment agreement and monitoring record  
+**Sample:** five children's direct payments selected at fieldwork from the council's list for the Children with Disabilities and SEN Teams; these payments cannot be identified in the published spend data
 
 
 ## Prepared-by-client (PBC) request list
@@ -423,20 +531,27 @@ Derived from the test steps above. Each item names the tests that need it.
 | 2 | R-01 | Procurement Portal quotation records, quotes received and evaluation for the sampled payments | T-01.1 |
 | 3 | R-02 | Purchase orders and invoices for every payment in the sampled windows | T-02.1, T-02.2 |
 | 4 | R-02 | Quotation, tender, contract or framework call-off record covering each sampled supplier | T-02.1, T-02.2 |
-| 5 | R-03 | Award report, Key Decision record and Appendix A approvals for the contracts behind the sampled windows | T-03.1 |
-| 6 | R-03 | Award approvals (report, Key Decision record, board or Executive approval) for the contracts held by the sampled suppliers | T-03.2 |
-| 7 | R-04 | Contract register as at the end of the spend window, with value, duration and supplier | T-04.1 |
-| 8 | R-04 | Quotation, tender, framework call-off or waiver record for each sampled supplier | T-04.2, T-04.3 |
-| 9 | R-04 | Contract notice and award decision for each sampled supplier | T-04.2, T-04.3 |
-| 10 | R-05 | Invoices and purchase orders for every payment in the sampled duplicate groups | T-05.1, T-05.2 |
-| 11 | R-05 | Credit notes or recovery records for any duplicate identified | T-05.1 |
-| 12 | R-05 | Contract payment schedules for the sampled suppliers | T-05.2 |
-| 13 | R-05 | Placement invoices and care package references for the sampled placement groups | T-05.3 |
-| 14 | R-06 | Current contract or S151 extension approval for each sampled supplier | T-06.1 |
-| 15 | R-07 | Signed contracts and contract spend to date for the sampled suppliers | T-07.1 |
-| 16 | R-07 | Variation approvals for the sampled suppliers | T-07.1 |
-| 17 | R-08 | Waiver and exception log for the spend window, with the approval record for each entry | T-08.1 |
-| 18 | R-08 | Exception reports and the board, Executive or Monitoring Officer approvals for each log entry | T-08.2 |
-| 19 | R-09 | Case notes recording the reasons for provider choice for the sampled placements | T-09.1 |
-| 20 | R-09 | Provider Selection Regime decision records where the regime applies | T-09.1 |
-| 21 | R-09 | Case notes and direct payment agreements for the sampled direct payments | T-09.2 |
+| 5 | R-02 | Grant agreements and payment schedules for every payment in the sampled grant windows | T-02.3 |
+| 6 | R-03 | Award report, Key Decision record and Appendix A approvals for the contracts behind the sampled windows | T-03.1 |
+| 7 | R-03 | Award approvals (report, Key Decision record, board or Executive approval) for the contracts held by the sampled suppliers | T-03.2 |
+| 8 | R-04 | Contract register as at the end of the spend window, with value, duration and supplier | T-04.1 |
+| 9 | R-04 | Record of grant agreements in force during the spend window | T-04.1 |
+| 10 | R-04 | Quotation, tender, framework call-off or waiver record for each sampled supplier | T-04.2, T-04.3, T-04.7 |
+| 11 | R-04 | Contract notice and award decision for each sampled supplier | T-04.2, T-04.3, T-04.7 |
+| 12 | R-04 | Grant agreement, award decision and any waiver approval for each sampled grant supplier | T-04.4, T-04.5, T-04.8 |
+| 13 | R-04 | Agency-staff contract or framework call-off and its approval | T-04.6 |
+| 14 | R-04 | Invoices and timesheets for the sampled agency-staff payments | T-04.6 |
+| 15 | R-05 | Invoices and purchase orders for every payment in the sampled duplicate groups | T-05.1, T-05.2 |
+| 16 | R-05 | Credit notes or recovery records for any duplicate identified | T-05.1 |
+| 17 | R-05 | Contract payment schedules for the sampled suppliers | T-05.2 |
+| 18 | R-05 | Placement invoices and care package references for the sampled placement groups | T-05.3 |
+| 19 | R-06 | Current contract or S151 extension approval for each sampled supplier | T-06.1 |
+| 20 | R-07 | Signed contracts and contract spend to date for the sampled suppliers | T-07.1 |
+| 21 | R-07 | Variation approvals for the sampled suppliers | T-07.1 |
+| 22 | R-08 | Waiver and exception log for the spend window, with the approval record for each entry | T-08.1 |
+| 23 | R-08 | Exception reports and the board, Executive or Monitoring Officer approvals for each log entry | T-08.2 |
+| 24 | R-09 | Case notes recording the reasons for provider choice for the sampled placements, with the invoice breakdown where a payment covers more than one placement | T-09.1 |
+| 25 | R-09 | Provider Selection Regime decision records where the regime applies | T-09.1 |
+| 26 | R-09 | Case notes and direct payment agreements for the sampled direct payments | T-09.2 |
+| 27 | R-09 | List of direct payments made by the Children with Disabilities and SEN Teams in the spend window | T-09.3 |
+| 28 | R-09 | Case notes and direct payment agreements for the five selected children's direct payments | T-09.3 |

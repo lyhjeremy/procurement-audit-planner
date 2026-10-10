@@ -583,8 +583,9 @@ def main():
                         "Net amount excludes VAT; rules.json notes a VAT ambiguity between clause 6.15 and App B"],
         "rule_refs": {"placements_exempt_App_C_row_F": row_f, "extension_App_C_row_D": row_d,
                       "variation_App_C_row_E": row_e,
-                      "grant_as_contract_clause_1_6_2": ("in rules.json excluded list (definition), no rule_id"
-                                                         if "1.6.2" in excluded_clauses else "not found")},
+                      "grant_as_contract_clause_1_6_2": (rule_ids_for_clause(rules, "1.6.2") or
+                                                         ("in rules.json excluded list (definition), no rule_id"
+                                                          if "1.6.2" in excluded_clauses else "not found"))},
     }
     contracts_out = {k: contracts.get(k) for k in [
         "rows_in_file", "rows_for_council", "notices", "notice_supplier_pairs", "distinct_suppliers",

@@ -1,16 +1,16 @@
 # Auditor comments: risk register gate
 
 Reviewer: Jeremy Lee
-Date: 2026-10-06
+Date: 2026-10-09
 
 For each risk write approve, amend (say what to change) or reject (say why) in Decision. A blank Decision means no decision yet. Re-run the risk-assessor to apply the decisions.
 
 | ID | Risk | Now | Scope now | Decision | Comment |
 |---|---|---|---|---|---|
-| R-01 | Quotes not sought for payments just below the quotation thresholds | 2 × 3 = 6 | in | amend | Bring into scope. Threshold-hugging at the £25,000 quote boundary is a standard test and cheap to sample; keep the rating as it is. |
+| R-01 | Quotes not sought for payments just below the quotation thresholds | 2 × 3 = 6 | in | approve | The revision 1 amendment (R-01 in scope) stands. |
 | R-02 | Requirements split into payments that each stay under the quotation threshold | 3 × 4 = 12 | in | approve |  |
 | R-03 | High-value awards made without Key Decision or the approvals in Appendix A | 2 × 5 = 10 | in | approve |  |
-| R-04 | Spend above the quotation threshold with no published contract notice | 3 × 5 = 15 | in | approve |  |
+| R-04 | Spend above the quotation threshold with no published contract notice | 3 × 5 = 15 | in | amend | Clause 1.6.2 makes a grant a contract (now CPR-66), so bring grant suppliers with no live notice into R-04, and agency-staff suppliers too, since agency staff is a bought service. Placements stay with R-09. Keep premises (rent, rates, leases) out: these are property costs, not purchases under the Rules; list them under Excluded with that reason. Replace the grants exclusion. Keep the rating unless the evidence moves it. |
 | R-05 | Duplicate or repeated payments of the same amount | 3 × 3 = 9 | in | approve |  |
 | R-06 | Spend continuing after the published contract has ended | 2 × 3 = 6 | in | approve |  |
 | R-07 | Spend running above the awarded contract value without an approved variation | 3 × 4 = 12 | in | approve |  |

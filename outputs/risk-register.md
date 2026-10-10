@@ -1,10 +1,10 @@
 # Procurement audit planning: risk register
 
-*Status: REVISION 1 for auditor sign-off.*
+*Status: REVISION 2 for auditor sign-off.*
 
-*Revision 1, following auditor comments dated 2026-10-06 by Jeremy Lee. Changed: R-01 (amended), R-10 (rejected).*
+*Revision 2, following auditor comments dated 2026-10-09 by Jeremy Lee. Changed: R-04 (amended).*
 
-*Generated 2026-10-06 by `build_register.py` from `risk-ratings.json`, `rules.json`, `analytics.json` and `history.json`.*
+*Generated 2026-10-09 by `build_register.py` from `risk-ratings.json`, `rules.json`, `analytics.json` and `history.json`.*
 
 **Indicators, not findings.** Each risk describes a pattern in public data to investigate. Nothing here asserts wrongdoing by the council, a department, an officer or a supplier.
 
@@ -104,11 +104,11 @@ Awards above the Key Decision threshold that do not follow the approval route in
 
 ### R-04: Spend above the quotation threshold with no published contract notice
 
-Suppliers paid at or above the quotation threshold on an annualised basis with no matching published contract notice may indicate spend without the competition or notice the Rules require [CPR-54]. The notice export is not a contract register, so this is an indicator to check, not evidence of off-contract spend.
+Suppliers paid at or above the quotation threshold on an annualised basis with no matching published contract notice may indicate spend without the competition or notice the Rules require [CPR-54]. This covers general procurement, grants, which the Rules treat as contracts [CPR-66], and agency staff, a bought service. The notice export is not a contract register, so this is an indicator to check, not evidence of off-contract spend.
 
-**Likelihood 3 (Likely).** 185 general-procurement suppliers at or above £25,000 annualised have no exact-name match to an active notice [$.tests.off_contract.unmatched_general_procurement.suppliers], against 40 exact matches across all tags [$.tests.off_contract.per_match_class.exact.suppliers]: a clear signal by count. Held at 3 because the source holds published notices only and no contract register was available [$.tests.off_contract.register_present]; earlier awards, notices placed elsewhere, framework call-offs under another buyer and exempt placements will not appear. Placement suppliers are left out because placements are exempt from competition [CPR-64]. Contract Letting received Reasonable Assurance [AUD-01], so no uplift.
+**Likelihood 3 (Likely).** At or above £25,000 annualised with no exact-name match to an active notice there are 185 general-procurement suppliers [$.tests.off_contract.unmatched_by_dominant_tag.general_procurement.suppliers], 123 grant suppliers [$.tests.off_contract.unmatched_by_dominant_tag.grant.suppliers] and a further 1 in agency staff [$.tests.off_contract.unmatched_by_dominant_tag.agency_staff.suppliers], against 40 exact matches across all tags [$.tests.off_contract.per_match_class.exact.suppliers]: a clear signal by count. Grants come within the Rules because providing funding or a grant to an external organisation is entering a contract [CPR-66]. Held at 3 because the source holds published notices only and no contract register was available [$.tests.off_contract.register_present]; earlier awards, notices placed elsewhere, framework call-offs under another buyer and grant agreements not published as notices will not appear. Placement suppliers stay with R-09 because placements are exempt from competition [CPR-64]; premises costs are left out as property costs, not purchases under the Rules. Contract Letting received Reasonable Assurance [AUD-01], so no uplift. Adding grants and agency staff does not move the score.
 
-**Impact 5 (Critical).** The annualised estimate for unmatched general-procurement suppliers, £98,484,571.20 [$.tests.off_contract.unmatched_general_procurement.annualised_estimate_gbp], is in the Critical financial band [$.scoring_method.impact_scale[0].financial]; competition and publication duties apply [CPR-54] [CPR-05]. No adjustment.
+**Impact 5 (Critical).** The annualised estimate for unmatched general-procurement suppliers alone, £98,484,571.20 [$.tests.off_contract.unmatched_by_dominant_tag.general_procurement.annualised_estimate_gbp], is in the Critical financial band [$.scoring_method.impact_scale[0].financial]; unmatched grant suppliers add £23,474,958.04 [$.tests.off_contract.unmatched_by_dominant_tag.grant.annualised_estimate_gbp] and agency-staff suppliers £5,102,208.60 [$.tests.off_contract.unmatched_by_dominant_tag.agency_staff.annualised_estimate_gbp]. Competition and publication duties apply [CPR-54] [CPR-05], to grants as to other contracts [CPR-66]. Already at the top of the scale, so the wider population does not move the score. No adjustment.
 
 **Score 15: Extreme (matrix); Extreme (Table 4).**
 
@@ -116,16 +116,23 @@ Suppliers paid at or above the quotation threshold on an annualised basis with n
 
 - [rule:CPR-54] clause App B row B1: "Invitations to quote must be sent via the Procurement Portal to at least three appropriate sources, including at least one SME* or VCSE* org…"
 - [rule:CPR-05] clause 5.2.1: "A register of contracts, including those in progress and those awarded, with key information such as the contract value, duration and suppli…"
+- [rule:CPR-66] clause 1.6.2: "Providing funding or a grant to an external organisation."
 - [rule:CPR-64] clause App C row F: "Service Directors must ensure that a record of the reasons for the choice of provider is maintained on the individual’s case notes."
-- [metric:$.tests.off_contract.unmatched_general_procurement.suppliers] 185
-- [metric:$.tests.off_contract.unmatched_general_procurement.annualised_estimate_gbp] 98,484,571.20
+- [metric:$.tests.off_contract.unmatched_by_dominant_tag.general_procurement.suppliers] 185
+- [metric:$.tests.off_contract.unmatched_by_dominant_tag.general_procurement.annualised_estimate_gbp] 98,484,571.20
+- [metric:$.tests.off_contract.unmatched_by_dominant_tag.grant.suppliers] 123
+- [metric:$.tests.off_contract.unmatched_by_dominant_tag.grant.annualised_estimate_gbp] 23,474,958.04
+- [metric:$.tests.off_contract.unmatched_by_dominant_tag.agency_staff.suppliers] 1
+- [metric:$.tests.off_contract.unmatched_by_dominant_tag.agency_staff.annualised_estimate_gbp] 5,102,208.60
+- [metric:$.population.tags.grant.gbp] 6,033,599.82
+- [metric:$.population.tags.agency_staff.gbp] 1,285,541.24
 - [metric:$.tests.off_contract.per_match_class.exact.suppliers] 40
 - [metric:$.tests.off_contract.register_present] False
 - [history:AUD-01] Contract Letting: Reasonable Assurance (audit-completed-work-2024-25-annual.pdf, p. 1)
 
-**Proposed focus.** Obtain the council's contract register and reconcile it to the unmatched general-procurement suppliers, confirming near matches first; for suppliers still unmatched, request the quote, tender or waiver record behind the spend.
+**Proposed focus.** Obtain the council's contract register and grant agreements and reconcile them to the unmatched general-procurement, grant and agency-staff suppliers, confirming near matches first; for suppliers still unmatched, request the quote, tender, grant award or waiver record behind the spend.
 
-**Recommended scope: in.** Largest exposure in the register; the reconciliation also tests register completeness (R-10). Sample source: `analytics-full/off-contract.csv`.
+**Recommended scope: in.** Largest exposure in the register; the reconciliation also tests register completeness, the reason R-10 was rejected. Sample source: `analytics-full/off-contract.csv`.
 
 ### R-05: Duplicate or repeated payments of the same amount
 
@@ -247,22 +254,22 @@ Care and education placements, which are exempt from competition, may be made wi
 ## Excluded
 
 - Tender and advertising duties above the statutory threshold: The three statutory threshold values are null in rules.json, so analytics.json skipped the statutory tier of every test; not rated until the auditor supplies the figures with a source.
-- Grants treated as contracts: Grant spend is tagged separately, and the clause that would bring a grant within the Rules is a definition excluded from rules.json with no rule ID to cite.
+- Premises costs (rent, rates, leases): Auditor: these are property costs, not purchases under the Rules, so suppliers tagged as premises are kept out of R-04.
 - R-10: Contract register incomplete or awards not notified to it: Auditor: Covered by R-04: reconciling unmatched suppliers to the contract register already tests its completeness.
 
 ## Auditor decisions
 
-Decisions by Jeremy Lee, dated 2026-10-06.
+Decisions by Jeremy Lee, dated 2026-10-09.
 
 | ID | Decision | Applied as | Comment |
 |---|---|---|---|
-| R-01 | amend | amended | Bring into scope. Threshold-hugging at the £25,000 quote boundary is a standard test and cheap to sample; keep the rating as it is. |
+| R-01 | approve | kept as rated | The revision 1 amendment (R-01 in scope) stands. |
 | R-02 | approve | kept as rated |  |
 | R-03 | approve | kept as rated |  |
-| R-04 | approve | kept as rated |  |
+| R-04 | amend | amended | Clause 1.6.2 makes a grant a contract (now CPR-66), so bring grant suppliers with no live notice into R-04, and agency-staff suppliers too, since agency staff is a bought service. Placements stay with R-09. Keep premises (rent, rates, leases) out: these are property costs, not purchases under the Rules; list them under Excluded with that reason. Replace the grants exclusion. Keep the rating unless the evidence moves it. |
 | R-05 | approve | kept as rated |  |
 | R-06 | approve | kept as rated |  |
 | R-07 | approve | kept as rated |  |
 | R-08 | approve | kept as rated |  |
 | R-09 | approve | kept as rated |  |
-| R-10 | reject | rejected; moved to excluded | Covered by R-04: reconciling unmatched suppliers to the contract register already tests its completeness. |
+| R-10 | reject | rejected earlier; stays excluded | Covered by R-04: reconciling unmatched suppliers to the contract register already tests its completeness. |

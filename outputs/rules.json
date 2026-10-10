@@ -48,7 +48,8 @@
     "Appendix B introduction says the thresholds apply to all contract types, but rows B1 (goods and services) and B2/C (works, concession, light touch) split by category; row D's label 'Goods and Services Works' is missing a separator.",
     "10.2 requires 'All contracts entered into by the Council as detailed in Appendix B' to be in writing; which contracts this covers (all bands, or only those above £1,000) is not stated.",
     "11.5.3 is garbled ('in consultation with the Service Director for Finance and Property or nominated officer who must ensure the contractor's status ...'), so it is unclear who checks Construction Industry Scheme status.",
-    "6.11 refers to 'tenderers from other member states', EU-era wording with no stated meaning under PA2023."
+    "6.11 refers to 'tenderers from other member states', EU-era wording with no stated meaning under PA2023.",
+    "CPR-66 (clause 1.6.2) was added on 2026-10-09 at the auditor's direction, after the first run. The extract-rules skill excludes definitions, so clause 1.6 and its limbs were first excluded; the spend-analyst instructions treat 1.6.2 as making a grant a contract and ask for it to be cited by rule_id. It is appended as CPR-66 rather than placed in document order so that CPR-01 to CPR-65 keep their IDs. Clauses 1.6 and 1.6.1 stay excluded."
   ],
   "rules": [
     {
@@ -1104,6 +1105,22 @@
       "approver": "relevant board",
       "evidence_source": "council-records",
       "verbatim_quote": "In the interests of clarity where an exemption is applied all contracts with an annual or total value of more than the Threshold must be approved by the relevant board."
+    },
+    {
+      "rule_id": "CPR-66",
+      "clause": "1.6.2",
+      "page": 2,
+      "type": "required-action",
+      "scope": "all",
+      "condition": "the council provides funding or a grant to an external organisation",
+      "threshold_low": null,
+      "threshold_low_inclusive": null,
+      "threshold_high": null,
+      "threshold_high_inclusive": null,
+      "required_action": "Treat the grant as entering a contract (clause 1.6), so these Rules apply to it.",
+      "approver": null,
+      "evidence_source": "spend-data",
+      "verbatim_quote": "Providing funding or a grant to an external organisation."
     }
   ],
   "excluded": [
@@ -1139,11 +1156,6 @@
     },
     {
       "clause": "1.6.1",
-      "page": 2,
-      "reason": "part of the 1.6 definition"
-    },
-    {
-      "clause": "1.6.2",
       "page": 2,
       "reason": "part of the 1.6 definition"
     },

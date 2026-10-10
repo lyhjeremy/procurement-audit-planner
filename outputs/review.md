@@ -1,21 +1,25 @@
 # QA review of the audit planning pack
 
-Pack version checked: v3 (PACK READY v3, PLANNER DONE v3, CHALLENGER DONE against v3)
-Date: 2026-10-06
+Pack version checked: v3 on register revision 2 (PACK READY v3; PLANNER DONE v3 and CHALLENGER DONE confirmed by the lead)
+Date: 2026-10-09
 Command: `.venv/bin/python scripts/checks/run_checks.py` (exit 0)
 
 ## Check results
 
 | Check | Result | Counts as printed by the script |
 | --- | --- | --- |
-| quotes | PASS | rules=65 register_excerpts=22 failures=0 (verify_quotes.py: ALL CHECKS PASSED, 65 rules, 99 excluded, 0 warnings) |
-| numbers | PASS | figures_checked=251 allowed_values=2286 failures=0 |
-| trace | PASS | rules=65 rules_cited=36 rules_not_tested=29 approved_in_scope=9 planned=9 high_risks=6 challenges=12 open=0 failures=0 |
-| samples | PASS | transactions_checked=229 in_program=208 workbooks=3 failures=0 |
+| quotes | PASS | rules=66 register_excerpts=23 failures=0 (verify_quotes.py: ALL CHECKS PASSED, 66 rules, 98 excluded, 0 warnings) |
+| numbers | PASS | figures_checked=316 allowed_values=2368 failures=0 |
+| trace | PASS | rules=66 rules_cited=39 rules_not_tested=27 approved_in_scope=9 planned=9 high_risks=6 challenges=8 open=0 failures=0 |
+| samples | PASS | transactions_checked=289 in_program=268 workbooks=3 failures=0 |
 
 ## Failures
 
-None. Earlier runs failed only on the trace check: v1 because `challenges.md` was missing, v2 because challenges #1 to #8 were open. Both were cleared by v3.
+None in the final run. Earlier rounds in this run:
+
+- v1 passed 4/4, but the trace check read the challenges.md left from the revision 1 run.
+- v2 and the first v3 run failed trace with "challenges still open: #1, #2, #3, #4, #5, #6, #7".
+- After the challenger closed its challenges, challenges.md held 8 challenges with 0 open, and all four checks pass on v3.
 
 ## Verdict
 
@@ -24,6 +28,6 @@ READY FOR SIGN-OFF (4/4 checks pass)
 ## Auditor sign-off
 
 Signed off by: Jeremy Lee
-Date: 2026-10-06
+Date: 2026-10-09
 Decision (sign off / return to the team): sign off
-Comment: Challenge #2 (R-03 likelihood) noted and not taken up: R-03 is already in scope, and T-04.2 tests the Appendix A approval for unmatched suppliers above the Key Decision threshold, so a higher score would not change the fieldwork.
+Comment: No challenge is marked for the auditor. Two questions go to the council at fieldwork, as the program already says: whether the DSG-funded early-years payments in T-04.4 and T-04.5 are grants under CPR-66 or statutory allocations, and whether the council's list of children's direct payments used for T-09.3 is complete.
