@@ -196,7 +196,7 @@ Part A was built and run step by step in one Claude Code session, with the
 person at the keyboard making both gate decisions in files. Part B runs the
 same `CLAUDE.md`, skills and agents unchanged through the Claude Agent SDK,
 one stage at a time, with the two gates as web forms, a passcode and a
-spending cap. A full Part B run cost about $4.45. Part B starts each run from
+spending cap. A full Part B run cost $3.68 to $4.45. Part B starts each run from
 the guide's skills, so its extract-rules stage files clause 1.6.2 as a
 definition again; the auditor at the gate decides how grants are treated,
 as we did in round two.
@@ -220,12 +220,20 @@ laptop:
   credit. The Part A run is shown read-only as the reference run, so the site
   shows the complete workflow at any time.
 
-The site holds one complete live run made by the deployed harness itself
-("Live Run 1", 6 to 7 Oct 2026): all seven stages, including both human gates,
-signed off, about $4.45 of API credit. Its team stage first stopped early (the
-lead ended its session while teammates were finishing); the harness now keeps
-each stage's session open, nudges a lead that goes quiet, and can retry a
-stopped stage, which is how that run finished.
+The site holds two complete live runs made by the deployed harness itself, both
+signed off:
+
+- **Live Run 1** (6 to 7 Oct 2026, $4.45): all seven stages. Its team stage first
+  stopped early (the lead ended its session while teammates were finishing); the
+  harness now keeps each stage's session open, nudges a lead that goes quiet,
+  and can retry a stopped stage, which is how that run finished.
+- **Live Run 2** (10 Oct 2026, $3.68, about 10 minutes of agent time): all seven
+  stages with no retry. At the gate Jeremy Lee approved 6 risks, amended 2
+  (lowered the likelihood of the off-contract and duplicate-payment risks,
+  which had been rated 4 on weaker evidence) and rejected 1 (award approvals,
+  covered by the off-contract tests). The team then went through 3 pack
+  versions and 10 challenges, all resolved; QA passed 4 of 4 checks; signed
+  off the same day.
 
 Details and deployment steps are in [deploy/README.md](deploy/README.md).
 
