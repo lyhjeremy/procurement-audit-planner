@@ -281,7 +281,7 @@ function renderGate() {
     const rows = STATE.register.map(r => `<tr data-id="${esc(r.id)}">
       <td><strong>${esc(r.id)}</strong></td><td>${esc(r.title)}<div class="band">${esc(r.label)} on the matrix; ${esc(r.band)} band; recommended ${esc(r.scope)} of scope</div></td>
       <td class="num">${esc(r.L)} × ${esc(r.I)} = ${esc(r.score)}</td>
-      <td><div class="choice">${["approve","amend","reject"].map(d => `<label><input type="radio" name="d-${esc(r.id)}" value="${d}" ${d === "approve" ? "checked" : ""}> ${d}</label>`).join("")}</div>
+      <td><div class="choice">${["approve","amend","reject"].map(d => `<label><input type="radio" name="d-${esc(r.id)}" value="${d}" required> ${d}</label>`).join("")}</div>
       <textarea aria-label="Comment for ${esc(r.id)}" placeholder="For amend, say what to change. For reject, say why."></textarea></td></tr>`).join("");
     g.innerHTML = `<form class="gatebox" id="gateform"><h3>Your decisions on the risk register</h3>
       <p>Nothing goes further until you decide on each risk. Read the register under Documents first. Amendments and rejections need a comment; the risk-assessor then revises the register to match.</p>
@@ -291,10 +291,13 @@ function renderGate() {
       <button class="btn" type="submit">Record decisions and continue</button></div><div class="msg" id="gatemsg" role="status"></div></form>`;
     $("#gateform").onsubmit = async ev => {
       ev.preventDefault();
-      const decisions = {};
+      const decisions = {}, undecided = [];
       g.querySelectorAll("tr[data-id]").forEach(tr => {
-        decisions[tr.dataset.id] = {decision: tr.querySelector("input:checked").value, comment: tr.querySelector("textarea").value};
+        const picked = tr.querySelector("input:checked");
+        if (!picked) { undecided.push(tr.dataset.id); return; }
+        decisions[tr.dataset.id] = {decision: picked.value, comment: tr.querySelector("textarea").value};
       });
+      if (undecided.length) { $("#gatemsg").className = "msg err"; $("#gatemsg").textContent = `Choose a decision for ${undecided.join(", ")}.`; return; }
       try {
         keepPass($("#gpass").value);
         await post(`/api/runs/${RID}/gate`, {passcode: $("#gpass").value, reviewer: $("#reviewer").value, decisions});
@@ -303,7 +306,7 @@ function renderGate() {
     };
   } else if (STATE.status === "awaiting_signoff" && RID !== "reference") {
     g.innerHTML = `<form class="gatebox" id="signform"><h3>Auditor sign-off</h3>
-      <p>The QA reviewer's verdict and checks are in review.md, and the challenger's open points are at the end of challenges.md. Sign off only if the verdict is READY FOR SIGN-OFF.</p>
+      <p>The QA reviewer's verdict and checks are in review.md, and the challenger's open points are at the end of challenges.md. Signing off re-runs the QA checks and is refused unless they all pass. To send the pack back, choose return to the team and say what to change.</p>
       <div class="sign"><label>Name<input type="text" id="sname" required></label>
       <label>Decision<select id="sdec"><option>sign off</option><option>return to the team</option></select></label>
       <label>Comment<input type="text" id="scomm"></label>
@@ -311,6 +314,9 @@ function renderGate() {
       <button class="btn" type="submit">Record sign-off</button></div><div class="msg" id="signmsg" role="status"></div></form>`;
     $("#signform").onsubmit = async ev => {
       ev.preventDefault();
+      if ($("#sdec").value === "return to the team" && !$("#scomm").value.trim()) {
+        $("#signmsg").className = "msg err"; $("#signmsg").textContent = "Say what the team should change."; return;
+      }
       try {
         keepPass($("#spass").value);
         await post(`/api/runs/${RID}/signoff`, {passcode: $("#spass").value, name: $("#sname").value, decision: $("#sdec").value, comment: $("#scomm").value});

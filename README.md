@@ -99,13 +99,13 @@ sends `QA vN: PASS/FAIL`; each ends with a DONE message to the lead.
 
 | Stage | Result |
 |---|---|
-| Rules | 66 testable rules, 98 excluded clauses, 4 statutory thresholds left null because the PDF only names them. 65 came from the skill; clause 1.6.2 (a grant is a contract) was added as CPR-66 at the second gate round |
-| Spend | 10,607 payments read, 8,534 kept after excluding pension, inter-authority and redacted-payee rows; 7 indicator tests |
+| Rules | 66 testable rules, 98 excluded clauses, 4 threshold parameters left null because the PDF only names them (3 statutory thresholds and the composite "relevant threshold"). 65 came from the skill; clause 1.6.2 (a grant is a contract) was added as CPR-66 at the second gate round |
+| Spend | 10,607 payments read, 8,534 kept after excluding pension, inter-authority and redacted-payee rows; 6 indicator tests, plus the list of high-value suppliers (annualised spend of £25,000 or more) that the off-contract test runs on |
 | History | 20 audit entries (16 audits, 3 follow-ups, 1 advisory review) with their opinions, including Limited on Personal Budgets (Direct Payments); 10 risk themes; the council's 5x5 scoring method; 13 discrepancies in the papers |
 | Register | 10 risks rated; the builder marks, without resolving, the conflict between Figure 4 (corporate register at 9 or above) and Table 4 (15 or above) |
 | Gate | Two rounds by Jeremy Lee. 2026-10-06: approved 8, amended R-01 into scope, rejected R-10 (revision 1). 2026-10-09: amended R-04 to add grants and agency staff, excluded premises (revision 2) |
 | Team | Final run on revision 2: 3 pack versions, 8 challenges over 2 rounds (all resolved, none for the auditor), the three agents messaging each other directly; QA verdict READY FOR SIGN-OFF with 4 of 4 checks passing |
-| Pack | 9 risks, 12 controls, 24 tests, 289 sampled payments, each traced to its row in the published workbooks; 39 of 66 rules cited and the other 27 listed as not tested with a reason |
+| Pack | 9 risks, 12 controls, 24 tests, 289 sample rows covering 268 distinct payments (21 payments are drawn by two tests), each traced to its row in the published workbooks; 39 of 66 rules cited and the other 27 listed as not tested with a reason |
 | Sign-off | Signed off on 2026-10-09, with two questions noted for the council at fieldwork |
 
 The outputs are all in `outputs/`. Start with
@@ -175,7 +175,7 @@ used in T-09.3 is complete.
 - R-10 was folded into R-04 instead of being planned twice.
 - The second round put £5.87M of grant spend (123 suppliers) and £1.28M of
   agency-staff spend under test. The rebuilt pack has 7 more tests (24 against
-  17) and 60 more sampled payments (289 against 229).
+  17) and 60 more sample rows (289 against 229).
 
 ### What we would do differently
 
@@ -254,7 +254,11 @@ deploy/                   Part B harness: FastAPI app, Dockerfile, fly.toml
 
 To run Part A yourself: clone, `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`,
 install poppler, open the folder in Claude Code and follow the guide; the
-skills and agents are already in place.
+skills and agents are already in place. The quote checks need poppler's
+`pdftotext` specifically; they stop with a clear message if they find another
+one. On Windows, Git for Windows puts xpdf's `pdftotext` on the PATH, so
+install poppler and set `PDFTOTEXT` to its `pdftotext.exe`; the venv's Python
+is `.venv\Scripts\python.exe` rather than `.venv/bin/python`.
 
 Data: West Berkshire Council, public records (Contract Procedure Rules,
 expenditure over £500, Contracts Finder notices, Governance Committee papers).

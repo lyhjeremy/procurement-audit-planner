@@ -43,7 +43,12 @@ It exits 0 when there are no failures. Stop and report if any input is missing.
 4. **Repeat findings.** If an audit on the same theme carries an adverse
    opinion (Limited, Weak, Unsatisfactory, No assurance), raise likelihood by
    one point (max 5), say so in `repeat_uplift`, and cite that audit. The
-   builder fails an uplift that cites an audit without an adverse opinion.
+   builder fails an uplift that cites an audit without an adverse opinion,
+   and fails one whose likelihood is not `base_score` + 1. A strict repeat is
+   a follow-up that found actions still not implemented, or adverse opinions
+   on the theme more than once; an uplift resting on one first-time adverse
+   opinion builds with a warning, so say plainly in the justification that it
+   is a first adverse opinion and leave the auditor to confirm it at the gate.
 5. **Never resolve a conflict in the scoring method silently.** The builder
    uses Table 4 bands and marks the Figure 4 rule in its own column and in the
    header; you do the same in prose.
@@ -133,8 +138,9 @@ compare values against bands; you never compute a new figure.
 ```
 
 - `id`: `R-01`, `R-02`, … in order. Keep IDs stable on a revision.
-- `repeat_uplift`, when applied: `{"cites": "history:AUD-16", "justification": "... [history:AUD-16]"}`.
-  The likelihood `score` you write already includes the +1.
+- `repeat_uplift`, when applied: `{"cites": "history:AUD-16", "base_score": 2, "justification": "... [history:AUD-16]"}`.
+  The likelihood `score` you write already includes the +1; `base_score` is
+  the score before it. `cites` may be a list when several audits apply.
 - `evidence`: citation strings without brackets. The builder renders rule
   evidence as a quote excerpt from rules.json, metrics with their value, and
   history items with their opinion and page.
@@ -165,7 +171,9 @@ Run the builder. It:
    `scoring_method.combination.matrix`, and the band from
    `scoring_method.bands` (Table 4); it marks the Figure 4 escalation rule
    next to it and names the conflict in the header;
-3. checks every repeat uplift cites an audit with an adverse opinion;
+3. checks every repeat uplift cites an audit with an adverse opinion and
+   adds exactly one point to `base_score`, and warns when the uplift rests on
+   one first-time adverse opinion rather than a repeat;
 4. warns on typed figures;
 5. renders `outputs/risk-register.md` (header, summary table, one section per
    risk, excluded themes, and a closing "Auditor decisions" section);
@@ -173,10 +181,15 @@ Run the builder. It:
    Decision and Comment cells, keeping every decision already recorded;
 7. on a revision, checks that every recorded decision was applied, that
    nothing else changed since the previous version, and writes the revision
-   header from your `revision` block.
+   header from your `revision` block. "Nothing else changed" covers title,
+   statement, scores, scope, justifications, evidence, focus, scope reason,
+   uplift, override and sample source; a risk listed as amended must differ
+   from the previous version.
 
 Fix every FAIL and every WARN by correcting the ratings file, never by editing
-the builder or the register. Re-run until `warnings: 0, failures: 0`.
+the builder or the register. Re-run until `warnings: 0, failures: 0`. The one
+exception is the first-time adverse opinion warning on an uplift you keep:
+report it, so the auditor confirms or removes the uplift at the gate.
 
 ## Step 6: Report
 

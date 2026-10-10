@@ -7,9 +7,9 @@ Checks: JSON shape; every item (anywhere in the tree) that has a `source`
 also has an integer `pdf_page`; the source file exists; every `quote` is
 found on the stated page after normalisation (whitespace collapsed, bullet
 glyphs and page footers ignored, quote/dash glyphs unified).
-Exit 0 with ALL CHECKS PASSED when clean.  Needs `pdftotext` on PATH.
+Exit 0 with ALL CHECKS PASSED when clean.  Needs poppler's `pdftotext` ($PDFTOTEXT, else PATH).
 """
-import json, re, shutil, subprocess, sys
+import json, os, re, shutil, subprocess, sys
 from pathlib import Path
 
 TOP = ("generated_at", "source_documents", "gaps", "audits", "opinion_basis", "agreed_actions",
@@ -25,10 +25,20 @@ def normalise(t: str) -> str:
     return re.sub(r"\s+", " ", t).strip()
 
 
+def poppler_pdftotext() -> str:
+    """poppler's pdftotext ($PDFTOTEXT, else PATH); xpdf orders table text differently."""
+    exe = os.environ.get("PDFTOTEXT") or shutil.which("pdftotext")
+    if not exe:
+        sys.exit("ERROR: poppler's pdftotext not found; install poppler-utils or set PDFTOTEXT")
+    v = subprocess.run([exe, "-v"], capture_output=True, encoding="utf-8", errors="replace")
+    if "poppler" not in (v.stdout + v.stderr).lower():
+        sys.exit(f"ERROR: {exe} is not poppler's pdftotext (Git for Windows ships xpdf); "
+                 "install poppler and put it first on PATH or set PDFTOTEXT")
+    return exe
+
+
 def pages(pdf: Path) -> list[str]:
-    if not shutil.which("pdftotext"):
-        sys.exit("ERROR: pdftotext not on PATH")
-    out = subprocess.run(["pdftotext", str(pdf), "-"], capture_output=True, text=True, check=True).stdout
+    out = subprocess.run([poppler_pdftotext(), "-enc", "UTF-8", str(pdf), "-"], capture_output=True, encoding="utf-8", check=True).stdout
     ps = out.split("\f")
     if ps and not ps[-1].strip():
         ps.pop()

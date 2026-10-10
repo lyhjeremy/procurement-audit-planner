@@ -56,14 +56,14 @@ def main():
                 if m:
                     ev.append({"kind": "tool", "stage": "team", "who": m.group(2),
                                "text": f"message to {m.group(3)}: {m.group(4)}"})
-    with (OUT / "events.jsonl").open("w") as f:
+    with (OUT / "events.jsonl").open("w", encoding="utf-8") as f:
         for e in ev:
             f.write(json.dumps(e) + "\n")
 
     state = {"id": "reference", "label": "Reference run (Part A build)", "created": "2026-10-06T07:00:00+00:00",
              "status": "signed_off", "current": "signoff", "model": "claude-opus-5-5 (Claude Code session)",
              "cost_usd": None, "stages": {sid: {"status": "done"} for sid in STAGES}}
-    (OUT / "state.json").write_text(json.dumps(state, indent=1))
+    (OUT / "state.json").write_text(json.dumps(state, indent=1), encoding="utf-8")
     print(f"wrote {OUT} ({len(ev)} events)")
 
 

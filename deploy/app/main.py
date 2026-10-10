@@ -12,13 +12,17 @@ from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse, Str
 
 from . import harness as H
 
-PASSCODE = os.environ.get("RUN_PASSCODE", "")
+# Taken out of the environment so the agent sessions (which inherit it) never see it.
+PASSCODE = os.environ.pop("RUN_PASSCODE", "")
 DAILY_CAP = int(os.environ.get("RUNS_PER_DAY", "3"))
 STATIC = Path(__file__).parent / "static"
 REFERENCE = Path(os.environ.get("REFERENCE_DIR", "/app/reference"))
 OUTPUT_FILES = ["rules.json", "analytics.json", "history.json", "risk-register.md", "auditor-comments.md",
                 "risk-ratings.json", "planning-memo.md", "risk-control-matrix.md", "audit-program.md",
                 "challenges.md", "review.md", "audit-plan.json", "pack-figures.json"]
+
+if PASSCODE:
+    H.SECRETS.append(PASSCODE)
 
 app = FastAPI(title="Procurement audit planner harness")
 H.RUNS.mkdir(parents=True, exist_ok=True)
@@ -31,7 +35,7 @@ def mark_interrupted():
     for p in H.RUNS.iterdir():
         sp = p / "state.json"
         if sp.exists():
-            st = json.loads(sp.read_text())
+            st = json.loads(sp.read_text(encoding="utf-8"))
             if st.get("status") == "running":
                 run = H.Run(p.name)
                 for s in st["stages"].values():
@@ -71,6 +75,23 @@ def run_dirs():
     return sorted([p for p in H.RUNS.iterdir() if (p / "state.json").exists()], reverse=True)
 
 
+def used_today() -> int:
+    """New runs started today plus retries and returns to the team today: each spends credit."""
+    today = datetime.datetime.utcnow()
+    n = 0
+    for p in run_dirs():
+        n += p.name.startswith(today.strftime("%Y%m%d"))
+        st = json.loads((p / "state.json").read_text(encoding="utf-8"))
+        n += sum(1 for r in st.get("reruns", []) if r.get("t", "").startswith(today.strftime("%Y-%m-%d")))
+    return n
+
+
+def check_cap():
+    if used_today() >= DAILY_CAP:
+        raise HTTPException(429, f"Today's limit of {DAILY_CAP} runs (retries and returns count) is used up. "
+                                 "Watch the latest run or the reference run.")
+
+
 @app.get("/")
 def index():
     return FileResponse(STATIC / "index.html")
@@ -78,8 +99,7 @@ def index():
 
 @app.get("/api/config")
 def config():
-    today = datetime.datetime.utcnow().strftime("%Y%m%d")
-    used = sum(1 for p in run_dirs() if p.name.startswith(today))
+    used = used_today()
     return {"model": H.MODEL, "stages": [{k: s[k] for k in ("id", "title", "kind", "who") if k in s} | {"human": s.get("human", False)}
                                          for s in H.STAGES],
             "runs_today": used, "daily_cap": DAILY_CAP, "busy": busy(), "runs_enabled": bool(PASSCODE),
@@ -90,9 +110,9 @@ def config():
 def runs():
     out = []
     if (REFERENCE / "state.json").exists():
-        out.append(json.loads((REFERENCE / "state.json").read_text()) | {"id": "reference"})
+        out.append(json.loads((REFERENCE / "state.json").read_text(encoding="utf-8")) | {"id": "reference"})
     for p in run_dirs():
-        st = json.loads((p / "state.json").read_text())
+        st = json.loads((p / "state.json").read_text(encoding="utf-8"))
         out.append({k: st.get(k) for k in ("id", "label", "created", "status", "current", "cost_usd")})
     return out
 
@@ -113,7 +133,7 @@ def outputs_dir(rid: str) -> Path:
 @app.get("/api/runs/{rid}")
 def run_state(rid: str):
     root = run_root(rid)
-    st = json.loads((root / "state.json").read_text())
+    st = json.loads((root / "state.json").read_text(encoding="utf-8"))
     out = outputs_dir(rid)
     st["files"] = [f for f in OUTPUT_FILES if (out / f).exists()]
     st["samples"] = sorted(p.name for p in (out / "samples").glob("T-*.csv")) if (out / "samples").exists() else []
@@ -125,9 +145,9 @@ def run_state(rid: str):
 def run_file(rid: str, name: str):
     out = outputs_dir(rid)
     p = (out / name).resolve()
-    if not str(p).startswith(str(out.resolve())) or not p.is_file():
+    if not p.is_relative_to(out.resolve()) or not p.is_file():
         raise HTTPException(404)
-    return PlainTextResponse(p.read_text(encoding="utf-8", errors="replace"))
+    return PlainTextResponse(H.redact(p.read_text(encoding="utf-8", errors="replace")))
 
 
 @app.get("/api/runs/{rid}/events")
@@ -144,7 +164,7 @@ async def run_events(rid: str, request: Request, since: int = 0):
                 yield f"id: {i + 1}\ndata: {lines[i]}\n\n"
             pos = len(lines)
             if rid == "reference" or not (rid in tasks and not tasks[rid].done()):
-                st = json.loads((run_root(rid) / "state.json").read_text())
+                st = json.loads((run_root(rid) / "state.json").read_text(encoding="utf-8"))
                 if st.get("status") != "running":
                     yield "event: idle\ndata: {}\n\n"
                     return
@@ -159,9 +179,7 @@ async def start_run(request: Request):
     check_pass(body)
     if busy():
         raise HTTPException(409, f"Run {busy()} is still working. One run at a time.")
-    today = datetime.datetime.utcnow().strftime("%Y%m%d")
-    if sum(1 for p in run_dirs() if p.name.startswith(today)) >= DAILY_CAP:
-        raise HTTPException(429, f"Today's limit of {DAILY_CAP} runs is used up. Watch the latest run or the reference run.")
+    check_cap()
     run = H.Run.create(label=str(body.get("label", ""))[:80])
     tasks[run.id] = asyncio.create_task(H.first_half(run))
     return {"id": run.id}
@@ -202,6 +220,8 @@ async def retry(rid: str, request: Request):
         raise HTTPException(409, "Only a stopped run can be retried.")
     if busy():
         raise HTTPException(409, f"Run {busy()} is still working. One run at a time.")
+    check_cap()
+    H.note_rerun(run, "retry")
     tasks[run.id] = asyncio.create_task(H.resume(run))
     return {"ok": True}
 
@@ -216,12 +236,27 @@ async def signoff(rid: str, request: Request):
     decision = body.get("decision")
     if decision not in ("sign off", "return to the team"):
         raise HTTPException(400, "Decision must be 'sign off' or 'return to the team'.")
-    review = (run.ws / "outputs" / "review.md").read_text(encoding="utf-8")
-    if decision == "sign off" and "READY FOR SIGN-OFF" not in review:
-        raise HTTPException(409, "The QA verdict is not READY FOR SIGN-OFF, so the pack cannot be signed off.")
     if not str(body.get("name", "")).strip():
         raise HTTPException(400, "Enter your name.")
-    H.write_signoff(run, body["name"], decision, body.get("comment", ""))
+    if busy():
+        raise HTTPException(409, f"Run {busy()} is still working. One run at a time.")
+    if decision == "sign off":
+        # The verdict comes from re-running the QA checks on the pack as it is now,
+        # not from searching review.md for text.
+        team = next(s for s in H.STAGES if s["id"] == "team")
+        passed, out = await asyncio.to_thread(H.verify_stage, run, team)
+        if not passed:
+            verdict = next((l for l in out.splitlines() if l.startswith("VERDICT")), "the checks did not pass")
+            raise HTTPException(409, f"The QA checks do not pass ({verdict}), so the pack cannot be signed off. "
+                                     "Return it to the team.")
+        H.write_signoff(run, body["name"], decision, body.get("comment", ""))
+    else:
+        if not str(body.get("comment", "")).strip():
+            raise HTTPException(400, "Say what the team should change.")
+        check_cap()
+        H.write_signoff(run, body["name"], decision, body.get("comment", ""))
+        H.note_rerun(run, "return to the team")
+        tasks[run.id] = asyncio.create_task(H.return_to_team(run, body["comment"]))
     return {"ok": True}
 
 

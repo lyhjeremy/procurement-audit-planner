@@ -15,9 +15,10 @@ Checks
   7. Every excluded entry has clause, page and reason.
 
 Exit 0 and print ALL CHECKS PASSED when clean; exit 1 otherwise.
-Requires `pdftotext` (poppler) on PATH, or the `pypdf` package as a fallback.
+Requires poppler's `pdftotext` ($PDFTOTEXT, else PATH); stops if it is xpdf or missing.
 """
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -52,20 +53,28 @@ GLYPHS = str.maketrans({
 })
 
 
+def poppler_pdftotext() -> str:
+    """Path to poppler's pdftotext ($PDFTOTEXT, else PATH). Other extractors
+    (xpdf, pypdf) order table cells differently, so quotes that are in the
+    PDF would be reported missing: stop instead of giving false failures."""
+    exe = os.environ.get("PDFTOTEXT") or shutil.which("pdftotext")
+    if not exe:
+        sys.exit("ERROR: poppler's pdftotext not found; install poppler-utils or set PDFTOTEXT")
+    v = subprocess.run([exe, "-v"], capture_output=True, encoding="utf-8", errors="replace")
+    if "poppler" not in (v.stdout + v.stderr).lower():
+        sys.exit(f"ERROR: {exe} is not poppler's pdftotext (Git for Windows ships xpdf); "
+                 "install poppler and put it first on PATH or set PDFTOTEXT")
+    return exe
+
+
 def pdf_pages(pdf: Path) -> list[str]:
-    if shutil.which("pdftotext"):
-        out = subprocess.run(
-            ["pdftotext", str(pdf), "-"], capture_output=True, text=True, check=True
-        ).stdout
-        pages = out.split("\f")
-        if pages and not pages[-1].strip():
-            pages.pop()
-        return pages
-    try:
-        from pypdf import PdfReader  # type: ignore
-    except ImportError:
-        sys.exit("ERROR: need pdftotext on PATH or the pypdf package installed")
-    return [p.extract_text() or "" for p in PdfReader(str(pdf)).pages]
+    out = subprocess.run(
+        [poppler_pdftotext(), "-enc", "UTF-8", str(pdf), "-"], capture_output=True, encoding="utf-8", check=True
+    ).stdout
+    pages = out.split("\f")
+    if pages and not pages[-1].strip():
+        pages.pop()
+    return pages
 
 
 BULLET_RE = re.compile(r"[\ue000-\uf8ff\u2022\u25aa\u25cf\u2043]")

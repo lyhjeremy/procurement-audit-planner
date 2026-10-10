@@ -50,7 +50,7 @@ def load_rules():
     if not os.path.exists(RULES):
         print("STOP: outputs/rules.json missing")
         sys.exit(1)
-    with open(RULES) as f:
+    with open(RULES, encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -403,7 +403,7 @@ def test_duplicates(df):
 
 def main():
     rules = load_rules()
-    with open(os.path.join(FULL, "cleaning-log.json")) as f:
+    with open(os.path.join(FULL, "cleaning-log.json"), encoding="utf-8") as f:
         clog = json.load(f)
     df = pd.read_csv(os.path.join(FULL, "spend-clean.csv"))
     months = clog["months_covered"]
@@ -607,7 +607,7 @@ def main():
         "matching": matching,
         "tests": tests,
     }
-    with open(os.path.join(ROOT, "outputs", "analytics.json"), "w") as f:
+    with open(os.path.join(ROOT, "outputs", "analytics.json"), "w", encoding="utf-8") as f:
         json.dump(out, f, indent=2, default=str)
 
     # terminal: headlines only

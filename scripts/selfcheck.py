@@ -10,7 +10,7 @@ import pandas as pd
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FULL = os.path.join(ROOT, "outputs", "analytics-full")
-A = json.load(open(os.path.join(ROOT, "outputs", "analytics.json")))
+A = json.load(open(os.path.join(ROOT, "outputs", "analytics.json"), encoding="utf-8"))
 df = pd.read_csv(os.path.join(FULL, "spend-clean.csv"))
 df["d"] = pd.to_datetime(df["pay_date"])
 factor = A["population"]["annualisation_factor"]

@@ -5,7 +5,7 @@ Runs check_quotes.py, check_numbers.py, check_trace.py and check_samples.py
 with the same interpreter, prints each script's FAIL lines and SUMMARY line,
 then a table of check | result | summary. Exit 0 only when every check passes.
 """
-import subprocess, sys
+import os, subprocess, sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -16,7 +16,7 @@ def main():
     results = []
     extra = sys.argv[1:2]  # optional outputs folder, passed to every check
     for name in CHECKS:
-        p = subprocess.run([sys.executable, str(HERE / name), *extra], capture_output=True, text=True)
+        p = subprocess.run([sys.executable, str(HERE / name), *extra], capture_output=True, encoding="utf-8", env={**os.environ, "PYTHONIOENCODING": "utf-8"})
         lines = p.stdout.strip().splitlines()
         summary = next((l for l in lines if l.startswith("SUMMARY")), "(no summary)")
         print(f"== {name}")

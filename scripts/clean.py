@@ -5,6 +5,7 @@ Writes to outputs/analytics-full/:
 
 Data under data/ is read-only. Thresholds are not used here.
 """
+import datetime
 import glob
 import json
 import os
@@ -12,6 +13,21 @@ import re
 import sys
 
 import pandas as pd
+
+SPEND_DATE_FORMATS = ("%m/%d/%y", "%m/%d/%Y")  # month first, explicit; never auto-detected
+
+
+def parse_spend_date(v):
+    """Spend dates load as datetimes; text dates are M/D/YY (or M/D/YYYY). Anything else is NaT (then stop)."""
+    if isinstance(v, (datetime.datetime, datetime.date)):
+        return pd.Timestamp(v)
+    for f in SPEND_DATE_FORMATS:
+        try:
+            return pd.Timestamp(datetime.datetime.strptime(str(v).strip(), f))
+        except ValueError:
+            pass
+    return pd.NaT
+
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "outputs", "analytics-full")
@@ -84,7 +100,7 @@ def load_spend():
         df["source_file"] = fname
         df["row_id"] = fname + ":" + df["sheet_row"].astype(str)
         if not pd.api.types.is_datetime64_any_dtype(df["Date"]):
-            df["Date"] = pd.to_datetime(df["Date"], dayfirst=False, errors="coerce")
+            df["Date"] = pd.to_datetime(df["Date"].map(parse_spend_date))
         df["Net amount"] = pd.to_numeric(df["Net amount"], errors="coerce")
         for col in ["Date", "Net amount", "Supplier name"]:
             n = int(df[col].isna().sum())
@@ -284,7 +300,7 @@ def main():
         "contracts": clog,
         "register_present": reg_present,
     }
-    with open(os.path.join(OUT, "cleaning-log.json"), "w") as f:
+    with open(os.path.join(OUT, "cleaning-log.json"), "w", encoding="utf-8") as f:
         json.dump(log, f, indent=2, default=str)
     print("rows_raw", rows_raw, "clean", len(clean), "excluded", len(excl), "months", months)
     print("excluded", {k: (v["rows"], v["gbp"]) for k, v in excluded.items()})

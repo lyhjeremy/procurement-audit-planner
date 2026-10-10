@@ -282,9 +282,9 @@ def main():
     a = ap.parse_args()
 
     fails, warns, figures = [], [], OrderedDict()
-    rules = json.loads(Path(a.rules).read_text())
-    an = json.loads(Path(a.analytics).read_text())
-    ratings = json.loads(Path(a.ratings).read_text())
+    rules = json.loads(Path(a.rules).read_text(encoding="utf-8"))
+    an = json.loads(Path(a.analytics).read_text(encoding="utf-8"))
+    ratings = json.loads(Path(a.ratings).read_text(encoding="utf-8"))
     rule_ids = OrderedDict((r["rule_id"], r) for r in rules["rules"])
     reg, rev = read_register(Path(a.register))
     dec = read_decisions(Path(a.comments))
@@ -298,7 +298,7 @@ def main():
             print("not in scope: " + (", ".join(f"{rid} ({v['decision']})" for rid, v in out_of_scope.items()) or "none"))
         return 1 if fails else 0
 
-    P = json.loads(Path(a.plan).read_text())
+    P = json.loads(Path(a.plan).read_text(encoding="utf-8"))
     full = Path(a.full)
     spend_by_id = {r["row_id"]: r for r in load_csv(full / "spend-clean.csv")} if (full / "spend-clean.csv").exists() else {}
     if not spend_by_id:
@@ -442,10 +442,12 @@ def main():
                     for x in (v if isinstance(v, list) else [v]):
                         if to_num(x) is not None: recipe_values.add(to_num(x))
     figures["sample_recipe_values"] = sorted(recipe_values)
+    distinct = OrderedDict((s["row_id"], s) for s in all_samples)  # a payment drawn by two tests is one transaction
     figures.update({
         "approved_in_scope": len(approved), "not_in_scope": len(out_of_scope), "register_risks": len(reg),
-        "controls": n_controls, "tests": n_tests, "sampled_transactions": len(all_samples),
-        "sampled_gbp": round(sum(to_num(s["amount"]) or 0 for s in all_samples), 2),
+        "controls": n_controls, "tests": n_tests, "sample_rows": len(all_samples),
+        "sampled_transactions": len(distinct),
+        "sampled_gbp": round(sum(to_num(s["amount"]) or 0 for s in distinct.values()), 2),
         "rules_total": len(rule_ids), "rules_cited": len([x for x in rule_ids if x in cited_rules]),
         "rules_not_tested": len([x for x in rule_ids if x not in cited_rules and x in not_tested]),
         "register_revision": rev, "decisions": len(dec["rows"]),
@@ -480,8 +482,9 @@ def main():
         for rid, v in out_of_scope.items():
             md.append(f"- {rid}: {v['title']}: {v['decision']}; {v['reason']}")
     md += ["\n## Approach\n", *memo["approach"]]
-    md.append(f"\nThe programme holds {figures['controls']} expected controls and {figures['tests']} test steps, with {figures['sampled_transactions']} "
-              f"sampled transactions worth £{figures['sampled_gbp']:,.2f}, each traceable to its row in the council's published workbooks "
+    md.append(f"\nThe programme holds {figures['controls']} expected controls and {figures['tests']} test steps, with {figures['sample_rows']} "
+              f"sample rows covering {figures['sampled_transactions']} distinct transactions worth £{figures['sampled_gbp']:,.2f} "
+              f"(a transaction drawn by more than one test is counted once), each traceable to its row in the council's published workbooks "
               f"(see `audit-program.md` and `outputs/samples/`).")
     md.append("\n## Rules coverage\n")
     md.append(f"{figures['rules_cited']} of {figures['rules_total']} rules in `rules.json` are cited by a risk, a control or a test. "
@@ -513,7 +516,7 @@ def main():
     # audit program
     md = ["# Audit program\n", head_note, indic]
     md.append(f"{figures['approved_in_scope']} risks in scope, {figures['controls']} controls, {figures['tests']} tests, "
-              f"{figures['sampled_transactions']} sampled transactions. Samples are drawn by the builder from `analytics-full/` "
+              f"{figures['sample_rows']} sample rows ({figures['sampled_transactions']} distinct transactions). Samples are drawn by the builder from `analytics-full/` "
               f"by the recipe stated under each test, and every transaction is listed with its workbook row.\n")
     for rid, r in planned.items():
         v = approved.get(rid, {})
@@ -544,7 +547,7 @@ def main():
     for w in warns: print("WARN ", w)
     for f in fails: print("FAIL ", f)
     print(f"\nscope: {len(approved)} approved risks planned, {len(out_of_scope)} not in scope; controls: {n_controls}; tests: {n_tests}; "
-          f"sampled transactions: {len(all_samples)}; rules cited: {figures['rules_cited']}/{figures['rules_total']}; warnings: {len(warns)}; failures: {len(fails)}")
+          f"sample rows: {len(all_samples)} ({len(distinct)} distinct transactions); rules cited: {figures['rules_cited']}/{figures['rules_total']}; warnings: {len(warns)}; failures: {len(fails)}")
     for name in ("planning-memo.md", "risk-control-matrix.md", "audit-program.md", "pack-figures.json"):
         print(f"written: {Path(a.out_dir, name)}")
     print(f"written: {samples_dir}/ ({len([p for p in samples_dir.glob('T-*.csv')])} files)")

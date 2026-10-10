@@ -7,7 +7,23 @@
    "I": 3,
    "scope": "in",
    "lj": "Weak signal. Just below the \u00a3{{$.thresholds[1].value}} threshold there are {{$.tests.threshold_clustering.per_threshold[1].band_count}} payments [metric:$.tests.threshold_clustering.per_threshold[1].band_count] against {{$.tests.threshold_clustering.per_threshold[1].comparator_count}} just above it [metric:$.tests.threshold_clustering.per_threshold[1].comparator_count], so there is no excess below the line, and only {{$.tests.threshold_clustering.per_threshold[1].by_tag.general_procurement.rows}} of them are general procurement [metric:$.tests.threshold_clustering.per_threshold[1].by_tag.general_procurement.rows]. Below \u00a3{{$.thresholds[0].value}} the band count of {{$.tests.threshold_clustering.per_threshold[0].band_count}} [metric:$.tests.threshold_clustering.per_threshold[0].band_count] exceeds the {{$.tests.threshold_clustering.per_threshold[0].comparator_count}} above [metric:$.tests.threshold_clustering.per_threshold[0].comparator_count], but that band includes payments of exactly the threshold value and the rule there asks for a single quote [rule:CPR-53]. No payment falls in the band below the next threshold up [metric:$.tests.threshold_clustering.per_threshold[2].band_count]. Contract Letting received Reasonable Assurance [history:AUD-01], so no uplift.",
-   "ij": "The general-procurement value in the band below the three-quote threshold, \u00a3{{$.tests.threshold_clustering.per_threshold[1].by_tag.general_procurement.gbp}} [metric:$.tests.threshold_clustering.per_threshold[1].by_tag.general_procurement.gbp], falls in the Medium financial band [history:$.scoring_method.impact_scale[2].financial]; the three-quote and contract notice duties are mandatory [rule:CPR-54]. No adjustment."
+   "ij": "The general-procurement value in the band below the three-quote threshold, \u00a3{{$.tests.threshold_clustering.per_threshold[1].by_tag.general_procurement.gbp}} [metric:$.tests.threshold_clustering.per_threshold[1].by_tag.general_procurement.gbp], falls in the Medium financial band [history:$.scoring_method.impact_scale[2].financial]; the three-quote and contract notice duties are mandatory [rule:CPR-54]. No adjustment.",
+   "evidence": [
+    "rule:CPR-53",
+    "rule:CPR-54",
+    "metric:$.tests.threshold_clustering.per_threshold[1].band_count",
+    "metric:$.tests.threshold_clustering.per_threshold[1].comparator_count",
+    "metric:$.tests.threshold_clustering.per_threshold[1].by_tag.general_procurement.rows",
+    "metric:$.tests.threshold_clustering.per_threshold[1].by_tag.general_procurement.gbp",
+    "metric:$.tests.threshold_clustering.per_threshold[0].band_count",
+    "metric:$.tests.threshold_clustering.per_threshold[0].comparator_count",
+    "history:AUD-01"
+   ],
+   "focus": "For the general-procurement payments in the band just below the three-quote threshold, check that invitations to quote went to at least three sources through the Procurement Portal and that a contract notice was published.",
+   "scope_reason": "Auditor: \"Bring into scope. Threshold-hugging at the \u00a3{{$.thresholds[1].value}} quote boundary is a standard test and cheap to sample; keep the rating as it is.\"",
+   "uplift": null,
+   "override": null,
+   "sample_source": "threshold-clustering.csv"
   },
   "R-02": {
    "title": "Requirements split into payments that each stay under the quotation threshold",
@@ -16,7 +32,21 @@
    "I": 4,
    "scope": "in",
    "lj": "Clear signal: {{$.tests.split_purchases.per_threshold[0].headline_general_procurement.windows}} general-procurement windows (one per supplier) where two or more payments each under \u00a3{{$.thresholds[1].value}} reach it within {{$.tests.split_purchases.parameters.window_days}} days [metric:$.tests.split_purchases.per_threshold[0].headline_general_procurement.windows], well over a handful of suppliers. Held at 3 rather than 4 because regular payments under one existing contract produce the same pattern and the published data cannot tell the two apart. Placement windows ({{$.tests.split_purchases.per_threshold[0].care_or_education_placement.windows}}) are left out because periodic care fees legitimately recur [metric:$.tests.split_purchases.per_threshold[0].care_or_education_placement.windows]. Counts are lower bounds since payments of the publication floor or less are not published [metric:$.tests.split_purchases.parameters.lower_bound_note]. Fraud and financial control are a named source of risk [history:RT-02]; no adverse audit on the theme, so no uplift.",
-   "ij": "The flagged general-procurement total of \u00a3{{$.tests.split_purchases.per_threshold[0].headline_general_procurement.gbp}} [metric:$.tests.split_purchases.per_threshold[0].headline_general_procurement.gbp] falls in the Critical financial band [history:$.scoring_method.impact_scale[0].financial]. Reduced by one point: the total is the value of the windows, not a loss, and a split below the quotation threshold matches the Major compliance descriptor, a high possibility of legal challenge [history:$.scoring_method.impact_scale[1].compliance] [rule:CPR-10]."
+   "ij": "The flagged general-procurement total of \u00a3{{$.tests.split_purchases.per_threshold[0].headline_general_procurement.gbp}} [metric:$.tests.split_purchases.per_threshold[0].headline_general_procurement.gbp] falls in the Critical financial band [history:$.scoring_method.impact_scale[0].financial]. Reduced by one point: the total is the value of the windows, not a loss, and a split below the quotation threshold matches the Major compliance descriptor, a high possibility of legal challenge [history:$.scoring_method.impact_scale[1].compliance] [rule:CPR-10].",
+   "evidence": [
+    "rule:CPR-10",
+    "rule:CPR-54",
+    "metric:$.tests.split_purchases.per_threshold[0].headline_general_procurement.windows",
+    "metric:$.tests.split_purchases.per_threshold[0].headline_general_procurement.gbp",
+    "metric:$.tests.split_purchases.per_threshold[0].care_or_education_placement.windows",
+    "metric:$.tests.split_purchases.parameters.window_days",
+    "history:RT-02"
+   ],
+   "focus": "For a sample of general-procurement windows, establish whether the payments relate to one requirement; where they do, check the competition the combined value required was run, or that an existing contract covers them.",
+   "scope_reason": "Clear signal across many suppliers on a mandatory anti-avoidance rule.",
+   "uplift": null,
+   "override": null,
+   "sample_source": "split-purchases.csv"
   },
   "R-03": {
    "title": "High-value awards made without Key Decision or the approvals in Appendix A",
@@ -25,7 +55,21 @@
    "I": 5,
    "scope": "in",
    "lj": "The award approval record is not in the published data, so the control cannot be observed directly. The only data signal is weak: {{$.tests.split_purchases.per_threshold[1].headline_general_procurement.windows}} general-procurement windows where payments each under \u00a3{{$.thresholds[2].value}} reach that value within {{$.tests.split_purchases.parameters.window_days}} days [metric:$.tests.split_purchases.per_threshold[1].headline_general_procurement.windows]. No audit in the papers covers award approvals, so no adverse history. The council's compliance appetite names high value transactions [history:RT-08].",
-   "ij": "The flagged windows total \u00a3{{$.tests.split_purchases.per_threshold[1].headline_general_procurement.gbp}} [metric:$.tests.split_purchases.per_threshold[1].headline_general_procurement.gbp], in the Critical financial band [history:$.scoring_method.impact_scale[0].financial]; an award that should have been a Key Decision but was not carries a probable legal challenge [rule:CPR-02]. No adjustment."
+   "ij": "The flagged windows total \u00a3{{$.tests.split_purchases.per_threshold[1].headline_general_procurement.gbp}} [metric:$.tests.split_purchases.per_threshold[1].headline_general_procurement.gbp], in the Critical financial band [history:$.scoring_method.impact_scale[0].financial]; an award that should have been a Key Decision but was not carries a probable legal challenge [rule:CPR-02]. No adjustment.",
+   "evidence": [
+    "rule:CPR-02",
+    "rule:CPR-50",
+    "rule:CPR-51",
+    "rule:CPR-52",
+    "metric:$.tests.split_purchases.per_threshold[1].headline_general_procurement.windows",
+    "metric:$.tests.split_purchases.per_threshold[1].headline_general_procurement.gbp",
+    "history:RT-08"
+   ],
+   "focus": "For the general-procurement windows reaching the Key Decision threshold and the largest annualised suppliers, trace the award to its approval: Key Decision record, board-approved report and the recommendations Appendix A requires.",
+   "scope_reason": "Small population with Critical exposure; the approval route is the control the data cannot see.",
+   "uplift": null,
+   "override": null,
+   "sample_source": "split-purchases.csv"
   },
   "R-04": {
    "title": "Spend above the quotation threshold with no published contract notice",
@@ -34,7 +78,29 @@
    "I": 5,
    "scope": "in",
    "lj": "At or above \u00a3{{$.tests.off_contract.parameters.threshold}} annualised with no exact-name match to an active notice there are {{$.tests.off_contract.unmatched_by_dominant_tag.general_procurement.suppliers}} general-procurement suppliers [metric:$.tests.off_contract.unmatched_by_dominant_tag.general_procurement.suppliers], {{$.tests.off_contract.unmatched_by_dominant_tag.grant.suppliers}} grant suppliers [metric:$.tests.off_contract.unmatched_by_dominant_tag.grant.suppliers] and a further {{$.tests.off_contract.unmatched_by_dominant_tag.agency_staff.suppliers}} in agency staff [metric:$.tests.off_contract.unmatched_by_dominant_tag.agency_staff.suppliers], against {{$.tests.off_contract.per_match_class.exact.suppliers}} exact matches across all tags [metric:$.tests.off_contract.per_match_class.exact.suppliers]: a clear signal by count. Grants come within the Rules because providing funding or a grant to an external organisation is entering a contract [rule:CPR-66]. Held at 3 because the source holds published notices only and no contract register was available [metric:$.tests.off_contract.register_present]; earlier awards, notices placed elsewhere, framework call-offs under another buyer and grant agreements not published as notices will not appear. Placement suppliers stay with R-09 because placements are exempt from competition [rule:CPR-64]; premises costs are left out as property costs, not purchases under the Rules. Contract Letting received Reasonable Assurance [history:AUD-01], so no uplift. Adding grants and agency staff does not move the score.",
-   "ij": "The annualised estimate for unmatched general-procurement suppliers alone, \u00a3{{$.tests.off_contract.unmatched_by_dominant_tag.general_procurement.annualised_estimate_gbp}} [metric:$.tests.off_contract.unmatched_by_dominant_tag.general_procurement.annualised_estimate_gbp], is in the Critical financial band [history:$.scoring_method.impact_scale[0].financial]; unmatched grant suppliers add \u00a3{{$.tests.off_contract.unmatched_by_dominant_tag.grant.annualised_estimate_gbp}} [metric:$.tests.off_contract.unmatched_by_dominant_tag.grant.annualised_estimate_gbp] and agency-staff suppliers \u00a3{{$.tests.off_contract.unmatched_by_dominant_tag.agency_staff.annualised_estimate_gbp}} [metric:$.tests.off_contract.unmatched_by_dominant_tag.agency_staff.annualised_estimate_gbp]. Competition and publication duties apply [rule:CPR-54] [rule:CPR-05], to grants as to other contracts [rule:CPR-66]. Already at the top of the scale, so the wider population does not move the score. No adjustment."
+   "ij": "The annualised estimate for unmatched general-procurement suppliers alone, \u00a3{{$.tests.off_contract.unmatched_by_dominant_tag.general_procurement.annualised_estimate_gbp}} [metric:$.tests.off_contract.unmatched_by_dominant_tag.general_procurement.annualised_estimate_gbp], is in the Critical financial band [history:$.scoring_method.impact_scale[0].financial]; unmatched grant suppliers add \u00a3{{$.tests.off_contract.unmatched_by_dominant_tag.grant.annualised_estimate_gbp}} [metric:$.tests.off_contract.unmatched_by_dominant_tag.grant.annualised_estimate_gbp] and agency-staff suppliers \u00a3{{$.tests.off_contract.unmatched_by_dominant_tag.agency_staff.annualised_estimate_gbp}} [metric:$.tests.off_contract.unmatched_by_dominant_tag.agency_staff.annualised_estimate_gbp]. Competition and publication duties apply [rule:CPR-54] [rule:CPR-05], to grants as to other contracts [rule:CPR-66]. Already at the top of the scale, so the wider population does not move the score. No adjustment.",
+   "evidence": [
+    "rule:CPR-54",
+    "rule:CPR-05",
+    "rule:CPR-66",
+    "rule:CPR-64",
+    "metric:$.tests.off_contract.unmatched_by_dominant_tag.general_procurement.suppliers",
+    "metric:$.tests.off_contract.unmatched_by_dominant_tag.general_procurement.annualised_estimate_gbp",
+    "metric:$.tests.off_contract.unmatched_by_dominant_tag.grant.suppliers",
+    "metric:$.tests.off_contract.unmatched_by_dominant_tag.grant.annualised_estimate_gbp",
+    "metric:$.tests.off_contract.unmatched_by_dominant_tag.agency_staff.suppliers",
+    "metric:$.tests.off_contract.unmatched_by_dominant_tag.agency_staff.annualised_estimate_gbp",
+    "metric:$.population.tags.grant.gbp",
+    "metric:$.population.tags.agency_staff.gbp",
+    "metric:$.tests.off_contract.per_match_class.exact.suppliers",
+    "metric:$.tests.off_contract.register_present",
+    "history:AUD-01"
+   ],
+   "focus": "Obtain the council's contract register and grant agreements and reconcile them to the unmatched general-procurement, grant and agency-staff suppliers, confirming near matches first; for suppliers still unmatched, request the quote, tender, grant award or waiver record behind the spend.",
+   "scope_reason": "Largest exposure in the register; the reconciliation also tests register completeness, the reason R-10 was rejected.",
+   "uplift": null,
+   "override": null,
+   "sample_source": "off-contract.csv"
   },
   "R-05": {
    "title": "Duplicate or repeated payments of the same amount",
@@ -43,7 +109,21 @@
    "I": 3,
    "scope": "in",
    "lj": "Clear signal in general procurement: {{$.tests.duplicates.tiers.same_timestamp.by_tag.general_procurement.groups}} groups share an identical payment date [metric:$.tests.duplicates.tiers.same_timestamp.by_tag.general_procurement.groups] and {{$.tests.duplicates.tiers.different_time.by_tag.general_procurement.groups}} more fall on different dates within seven days [metric:$.tests.duplicates.tiers.different_time.by_tag.general_procurement.groups]. Placement groups ({{$.tests.duplicates.tiers.same_timestamp.by_tag.care_or_education_placement.groups}} same-date, {{$.tests.duplicates.tiers.different_time.by_tag.care_or_education_placement.groups}} different-date) [metric:$.tests.duplicates.tiers.same_timestamp.by_tag.care_or_education_placement.groups] are not counted towards the score because fees at a standard rate legitimately repeat across service users. Accounts Payable received Reasonable Assurance [history:AUD-15], so no uplift.",
-   "ij": "The general-procurement value beyond the first payment in the different-date tier, \u00a3{{$.tests.duplicates.tiers.different_time.by_tag.general_procurement.gbp_beyond_first}} [metric:$.tests.duplicates.tiers.different_time.by_tag.general_procurement.gbp_beyond_first], is in the Medium financial band [history:$.scoring_method.impact_scale[2].financial]; the same-date tier adds a smaller \u00a3{{$.tests.duplicates.tiers.same_timestamp.by_tag.general_procurement.gbp_beyond_first}} [metric:$.tests.duplicates.tiers.same_timestamp.by_tag.general_procurement.gbp_beyond_first]. This is within the council's stated financial appetite range [history:RT-07]. No adjustment."
+   "ij": "The general-procurement value beyond the first payment in the different-date tier, \u00a3{{$.tests.duplicates.tiers.different_time.by_tag.general_procurement.gbp_beyond_first}} [metric:$.tests.duplicates.tiers.different_time.by_tag.general_procurement.gbp_beyond_first], is in the Medium financial band [history:$.scoring_method.impact_scale[2].financial]; the same-date tier adds a smaller \u00a3{{$.tests.duplicates.tiers.same_timestamp.by_tag.general_procurement.gbp_beyond_first}} [metric:$.tests.duplicates.tiers.same_timestamp.by_tag.general_procurement.gbp_beyond_first]. This is within the council's stated financial appetite range [history:RT-07]. No adjustment.",
+   "evidence": [
+    "rule:CPR-29",
+    "metric:$.tests.duplicates.tiers.same_timestamp.by_tag.general_procurement.groups",
+    "metric:$.tests.duplicates.tiers.different_time.by_tag.general_procurement.groups",
+    "metric:$.tests.duplicates.tiers.different_time.by_tag.general_procurement.gbp_beyond_first",
+    "metric:$.tests.duplicates.tiers.same_timestamp.by_tag.care_or_education_placement.groups",
+    "history:AUD-15",
+    "history:RT-07"
+   ],
+   "focus": "For a sample of general-procurement groups, match each payment to a distinct invoice and purchase record, and confirm any true duplicate was recovered; include a few of the largest placement groups to confirm they relate to different service users.",
+   "scope_reason": "Clear signal with a direct test against invoices.",
+   "uplift": null,
+   "override": null,
+   "sample_source": "duplicates.csv"
   },
   "R-06": {
    "title": "Spend continuing after the published contract has ended",
@@ -52,7 +132,19 @@
    "I": 3,
    "scope": "in",
    "lj": "Weak signal: {{$.tests.expired_notice_spend.suppliers}} suppliers [metric:$.tests.expired_notice_spend.suppliers], and a newer contract may exist with no notice [metric:$.tests.expired_notice_spend.caveat]. Contract management is a named source of risk [history:RT-03]; no adverse audit on the theme, so no uplift.",
-   "ij": "The annualised estimate of \u00a3{{$.tests.expired_notice_spend.annualised_estimate_gbp}} [metric:$.tests.expired_notice_spend.annualised_estimate_gbp] falls in the Major financial band [history:$.scoring_method.impact_scale[1].financial]. Reduced by one point: a missing extension approval matches the Medium compliance descriptor, a reasonable possibility of legal challenge [history:$.scoring_method.impact_scale[2].compliance] [rule:CPR-61]; the window total of \u00a3{{$.tests.expired_notice_spend.gbp}} [metric:$.tests.expired_notice_spend.gbp] includes one-off payments that annualising overstates."
+   "ij": "The annualised estimate of \u00a3{{$.tests.expired_notice_spend.annualised_estimate_gbp}} [metric:$.tests.expired_notice_spend.annualised_estimate_gbp] falls in the Major financial band [history:$.scoring_method.impact_scale[1].financial]. Reduced by one point: a missing extension approval matches the Medium compliance descriptor, a reasonable possibility of legal challenge [history:$.scoring_method.impact_scale[2].compliance] [rule:CPR-61]; the window total of \u00a3{{$.tests.expired_notice_spend.gbp}} [metric:$.tests.expired_notice_spend.gbp] includes one-off payments that annualising overstates.",
+   "evidence": [
+    "rule:CPR-61",
+    "metric:$.tests.expired_notice_spend.suppliers",
+    "metric:$.tests.expired_notice_spend.gbp",
+    "metric:$.tests.expired_notice_spend.annualised_estimate_gbp",
+    "history:RT-03"
+   ],
+   "focus": "For each flagged supplier, obtain the current contract or the S151-approved extension covering the payments in the window.",
+   "scope_reason": "Small, fully testable population.",
+   "uplift": null,
+   "override": null,
+   "sample_source": "expired-notice-spend.csv"
   },
   "R-07": {
    "title": "Spend running above the awarded contract value without an approved variation",
@@ -61,7 +153,21 @@
    "I": 4,
    "scope": "in",
    "lj": "Clear signal: {{$.tests.spend_vs_award.flagged}} of {{$.tests.spend_vs_award.suppliers_assessed}} assessed suppliers have an annualised estimate at least {{$.tests.spend_vs_award.parameters.ratio_flag}} times the award's annual rate [metric:$.tests.spend_vs_award.flagged] [metric:$.tests.spend_vs_award.suppliers_assessed], more than a handful. Award values may be estimates or maxima [metric:$.tests.spend_vs_award.caveat]. Contract management is a named source of risk [history:RT-03]; no adverse audit on the theme, so no uplift.",
-   "ij": "The flagged annualised estimate of \u00a3{{$.tests.spend_vs_award.flagged_annualised_estimate_gbp}} [metric:$.tests.spend_vs_award.flagged_annualised_estimate_gbp] is in the Critical financial band [history:$.scoring_method.impact_scale[0].financial]. Reduced by one point: the exposure is the excess over each award, which is smaller than the flagged total, and an unapproved variation matches the Major compliance descriptor [history:$.scoring_method.impact_scale[1].compliance] [rule:CPR-63]."
+   "ij": "The flagged annualised estimate of \u00a3{{$.tests.spend_vs_award.flagged_annualised_estimate_gbp}} [metric:$.tests.spend_vs_award.flagged_annualised_estimate_gbp] is in the Critical financial band [history:$.scoring_method.impact_scale[0].financial]. Reduced by one point: the exposure is the excess over each award, which is smaller than the flagged total, and an unapproved variation matches the Major compliance descriptor [history:$.scoring_method.impact_scale[1].compliance] [rule:CPR-63].",
+   "evidence": [
+    "rule:CPR-62",
+    "rule:CPR-63",
+    "metric:$.tests.spend_vs_award.flagged",
+    "metric:$.tests.spend_vs_award.suppliers_assessed",
+    "metric:$.tests.spend_vs_award.flagged_annualised_estimate_gbp",
+    "metric:$.tests.spend_vs_award.parameters.ratio_flag",
+    "history:RT-03"
+   ],
+   "focus": "For each flagged supplier, compare spend to the signed contract value and obtain any variation approval; confirm whether the published award value was an estimate or a maximum.",
+   "scope_reason": "Clear signal across a defined population of matched contracts.",
+   "uplift": null,
+   "override": null,
+   "sample_source": "spend-vs-award.csv"
   },
   "R-08": {
    "title": "Waivers and exceptions granted without the required approval",
@@ -70,7 +176,19 @@
    "I": 3,
    "scope": "in",
    "lj": "The waiver and exception record is not in the published data, so the control cannot be observed; no audit in the papers covers waivers, so no adverse history and no uplift. The Rules conflict on who may waive: the relevant Executive Director or Chief Executive under one clause [rule:CPR-17], only the Monitoring Officer or S151 Officer under another [rule:CPR-18], which makes a wrongly authorised waiver harder to spot.",
-   "ij": "No exposure in pounds can be measured for waivers. Rated on the compliance descriptor: a waiver approved by the wrong officer or left undocumented gives a reasonable possibility of successful legal challenge, the Medium descriptor [history:$.scoring_method.impact_scale[2].compliance]; every waiver must be documented and approved by the S151 Officer [rule:CPR-22] [rule:CPR-24]."
+   "ij": "No exposure in pounds can be measured for waivers. Rated on the compliance descriptor: a waiver approved by the wrong officer or left undocumented gives a reasonable possibility of successful legal challenge, the Medium descriptor [history:$.scoring_method.impact_scale[2].compliance]; every waiver must be documented and approved by the S151 Officer [rule:CPR-22] [rule:CPR-24].",
+   "evidence": [
+    "rule:CPR-17",
+    "rule:CPR-18",
+    "rule:CPR-22",
+    "rule:CPR-23",
+    "rule:CPR-24"
+   ],
+   "focus": "Obtain the waiver and exception log for the window, check each entry for documentation, advance approval by the correct officer and a board report where required, and ask which approver the council treats as authoritative.",
+   "scope_reason": "Mandatory control the data cannot see, with conflicting approver wording in the Rules.",
+   "uplift": null,
+   "override": null,
+   "sample_source": ""
   },
   "R-09": {
    "title": "Care and education placements without the recorded reasons for provider choice",
@@ -79,7 +197,23 @@
    "I": 4,
    "scope": "in",
    "lj": "Case notes are not in the spend data, so the control cannot be observed: base score 2. The {{$.tests.off_contract.unmatched_by_dominant_tag.care_or_education_placement.suppliers}} placement suppliers paid at or above the quotation threshold with no notice [metric:$.tests.off_contract.unmatched_by_dominant_tag.care_or_education_placement.suppliers] are expected under the exemption and are not read as a signal. Purchase of Residential and Nursing Care received Reasonable Assurance [history:AUD-18]. Raised to 3 by the repeat-finding uplift below.",
-   "ij": "Placement spend in the window, \u00a3{{$.population.tags.care_or_education_placement.gbp}} [metric:$.population.tags.care_or_education_placement.gbp], is in the Critical financial band [history:$.scoring_method.impact_scale[0].financial]. Reduced by one point: the duty at stake is a recording requirement under an exemption, nearer the Major compliance descriptor than probable regulatory intervention [history:$.scoring_method.impact_scale[1].compliance] [rule:CPR-64]."
+   "ij": "Placement spend in the window, \u00a3{{$.population.tags.care_or_education_placement.gbp}} [metric:$.population.tags.care_or_education_placement.gbp], is in the Critical financial band [history:$.scoring_method.impact_scale[0].financial]. Reduced by one point: the duty at stake is a recording requirement under an exemption, nearer the Major compliance descriptor than probable regulatory intervention [history:$.scoring_method.impact_scale[1].compliance] [rule:CPR-64].",
+   "evidence": [
+    "rule:CPR-64",
+    "rule:CPR-59",
+    "metric:$.population.tags.care_or_education_placement.gbp",
+    "metric:$.tests.off_contract.unmatched_by_dominant_tag.care_or_education_placement.suppliers",
+    "history:AUD-16",
+    "history:AUD-18"
+   ],
+   "focus": "For a sample of placement payments, check that the case notes record the reasons for the provider chosen and, where the Provider Selection Regime applies, that its process was followed.",
+   "scope_reason": "Adverse audit on the theme and the largest tagged spend population.",
+   "uplift": {
+    "cites": "history:AUD-16",
+    "justification": "Personal Budgets (Direct Payments) received Limited Assurance in the latest completed-work appendix [history:AUD-16]; direct payments fall within this theme of care purchased outside the Rules, so likelihood is raised by one point."
+   },
+   "override": null,
+   "sample_source": "spend-clean.csv"
   }
  },
  "excluded_ids": [

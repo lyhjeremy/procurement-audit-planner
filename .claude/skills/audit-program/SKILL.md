@@ -148,7 +148,7 @@ The builder checks the gate and the scope, resolves every citation and
 placeholder, draws every sample and verifies each transaction, checks
 that every control has a test and every rule is accounted for, then
 writes the three documents, `outputs/samples/T-*.csv` and
-`pack-figures.json` (every figure it computed, for the QA number check).
+`pack-figures.json` (every figure it computed; the QA number check recomputes these itself rather than trusting the file).
 Fix the plan until it reports no failures. Never edit the rendered files:
 the builder overwrites them.
 

@@ -111,13 +111,13 @@ def main():
             print(f"FAIL  input missing: {p}")
             return 1
     try:
-        R = json.loads(Path(a.ratings).read_text())
+        R = json.loads(Path(a.ratings).read_text(encoding="utf-8"))
     except json.JSONDecodeError as e:
         print(f"FAIL  {a.ratings} is not valid JSON: {e}")
         return 1
-    rules = {r["rule_id"]: r for r in json.loads(Path(a.rules).read_text())["rules"]}
-    an = json.loads(Path(a.analytics).read_text())
-    H = json.loads(Path(a.history).read_text())
+    rules = {r["rule_id"]: r for r in json.loads(Path(a.rules).read_text(encoding="utf-8"))["rules"]}
+    an = json.loads(Path(a.analytics).read_text(encoding="utf-8"))
+    H = json.loads(Path(a.history).read_text(encoding="utf-8"))
     hidx = history_index(H)
     sm = H.get("scoring_method") or {}
     usable = bool(sm.get("usable"))
@@ -247,12 +247,30 @@ def main():
             resolve(f"[{ev}]", f"{rid}.evidence")
         up = r.get("repeat_uplift")
         if up:
-            ref = (up.get("cites") or "").split(":", 1)[-1].strip()
-            item = hidx.get(ref)
-            if not item:
-                fails.append(f"{rid}.repeat_uplift: cites {up.get('cites')!r}, which is not an audit in history.json")
-            elif not ADVERSE.search(f"{item.get('opinion') or ''} {item.get('implementation_opinion') or ''}"):
-                fails.append(f"{rid}.repeat_uplift: {ref} has opinion {item.get('opinion')!r}, not an adverse one")
+            cites = up.get("cites") if isinstance(up.get("cites"), list) else [up.get("cites") or ""]
+            adverse = []
+            for c in cites:
+                ref = c.split(":", 1)[-1].strip()
+                item = hidx.get(ref)
+                if not item:
+                    fails.append(f"{rid}.repeat_uplift: cites {c!r}, which is not an audit in history.json")
+                elif not ADVERSE.search(f"{item.get('opinion') or ''} {item.get('implementation_opinion') or ''}"):
+                    fails.append(f"{rid}.repeat_uplift: {ref} has opinion {item.get('opinion')!r}, not an adverse one")
+                else:
+                    adverse.append((ref, item))
+            # A repeat finding: a follow-up that found actions still not implemented, or adverse opinions on
+            # the theme more than once. One first-time adverse opinion may justify an uplift but is not a repeat.
+            repeat = len(adverse) > 1 or any(i.get("kind") == "follow_up" and ADVERSE.search(i.get("implementation_opinion") or "")
+                                             for _, i in adverse)
+            if adverse and not repeat:
+                warns.append(f"{rid}.repeat_uplift: {', '.join(x for x, _ in adverse)} is one first-time adverse opinion, not a "
+                             "repeat finding (no follow-up or second adverse audit on the theme); the auditor should confirm the uplift")
+            base = up.get("base_score")
+            L = (r.get("likelihood") or {}).get("score")
+            if base is None:
+                warns.append(f"{rid}.repeat_uplift: no base_score, so the +1 cannot be checked")
+            elif not isinstance(base, int) or isinstance(base, bool) or L != min(base + 1, 5):
+                fails.append(f"{rid}.repeat_uplift: likelihood is {L!r} but base_score {base!r} + 1 is {min(base + 1, 5) if isinstance(base, int) else '?'}")
             resolve(up.get("justification"), f"{rid}.repeat_uplift")
         kept.append(r)
 
@@ -280,10 +298,19 @@ def main():
     versions = out_dir / ".register-versions"
     rev_block = R.get("revision")
     rev_no = None
+    # Everything the auditor approved. Older snapshots hold fewer keys; risks are compared on the keys the
+    # previous snapshot has, so a revision against an old snapshot checks what that snapshot recorded.
     snap_now = {x["id"]: {"title": x["r"].get("title", ""), "statement": x["r"].get("statement", ""),
                           "L": x["L"], "I": x["I"], "scope": x["scope"],
                           "lj": x["r"]["likelihood"].get("justification", ""),
-                          "ij": x["r"]["impact"].get("justification", "")} for x in rendered}
+                          "ij": x["r"]["impact"].get("justification", ""),
+                          "evidence": x["r"].get("evidence") or [], "focus": x["r"].get("proposed_focus", ""),
+                          "scope_reason": x["r"].get("scope_reason", ""), "uplift": x["r"].get("repeat_uplift"),
+                          "override": x["r"].get("auditor_override"), "sample_source": x["r"].get("sample_source", "")}
+                for x in rendered}
+
+    def same(rid, old):
+        return {k: snap_now[rid].get(k) for k in old} == old
     excluded_ids = {x.get("id"): x for x in R.get("excluded") or [] if x.get("id")}
     applied = OrderedDict()
     if decided:
@@ -299,7 +326,7 @@ def main():
                 rev_no = None
         changed = {c.get("id"): c.get("as") for c in (rev_block or {}).get("changed") or []}
         prev_path = versions / f"v{(rev_no or 1) - 1}.json"
-        prev = json.loads(prev_path.read_text()) if prev_path.exists() else None
+        prev = json.loads(prev_path.read_text(encoding="utf-8")) if prev_path.exists() else None
         if rev_no and prev is None:
             fails.append(f"no snapshot of the previous version ({prev_path}); build the first run before a revision")
         prev = prev or {"risks": {}, "excluded_ids": []}
@@ -319,6 +346,9 @@ def main():
                     fails.append(f"{rid}: amended by the auditor but missing from the register")
                 if changed.get(rid) != "amended":
                     fails.append(f"{rid}: amend decision not applied (revision block must list it as amended)")
+                elif rid in snap_now and rid in prev["risks"] and same(rid, prev["risks"][rid]):
+                    fails.append(f"{rid}: listed as amended, but nothing in the risk changed from the previous version; "
+                                 "apply the auditor's comment")
                 over = any(x["id"] == rid and x["r"].get("auditor_override") for x in rendered)
                 applied[rid] = "amended" + (" (auditor override)" if over else "")
             elif d == "reject":
@@ -337,7 +367,7 @@ def main():
                 continue
             if rid not in snap_now:
                 fails.append(f"{rid}: was in the previous version and has gone without a reject decision")
-            elif snap_now[rid] != old:
+            elif not same(rid, old):
                 diff = [k for k in old if snap_now[rid].get(k) != old[k]]
                 fails.append(f"{rid}: changed ({', '.join(diff)}) although the auditor did not ask for it")
         for rid in snap_now:
@@ -460,7 +490,7 @@ def main():
     if not fails:
         versions.mkdir(parents=True, exist_ok=True)
         (versions / f"v{rev_no or 0}.json").write_text(json.dumps(
-            {"risks": snap_now, "excluded_ids": sorted(set(excluded_ids) | {d["id"] for d in dropped})}, indent=1) + "\n")
+            {"risks": snap_now, "excluded_ids": sorted(set(excluded_ids) | {d["id"] for d in dropped})}, indent=1) + "\n", encoding="utf-8")
 
     for w in warns: print("WARN ", w)
     for f in fails: print("FAIL ", f)

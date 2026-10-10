@@ -24,7 +24,7 @@ all pass.
 | Check | Passes when |
 | --- | --- |
 | quotes | every `verbatim_quote` in `rules.json` is found in `data/contract-rules.pdf` on its stated page, and every quote excerpt in the register matches `rules.json` |
-| numbers | every figure of three or more digits, or with a £ sign, in the memo, the matrix and the program is a value in `analytics.json`, `pack-figures.json`, `rules.json` or the sample files |
+| numbers | every `{{metric}}` text in `audit-plan.json`, filled from `analytics.json`, appears word for word in the pack; the builder's own counts and totals (risks, decisions, controls, tests, sample rows, distinct transactions and their £ value, rules cited) and every risk score in the memo and matrix match values recomputed from the register, decisions, plan, rules and sample files; any other figure of three or more digits, or with a £ sign, is a value in `analytics.json`, `rules.json` or the sample files |
 | trace | every rule is cited by a risk, a control or a test, or listed as not tested with a reason; every approved in-scope risk has a control and a test; every High risk is in scope or its exclusion is recorded with a reason; no challenge is left open |
 | samples | every transaction in `outputs/samples/` and in `audit-program.md` exists in `spend-clean.csv` and at its stated row in the council's workbook, with the same supplier and amount |
 

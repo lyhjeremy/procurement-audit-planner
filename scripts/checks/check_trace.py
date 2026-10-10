@@ -33,9 +33,9 @@ def table_rows(text, first_col=r"R-\d+"):
 def main():
     fails = []
     IN = ROOT / "outputs"  # the register, decisions and inputs always come from the project
-    rules = [r["rule_id"] for r in json.loads((IN / "rules.json").read_text())["rules"]]
-    ratings = json.loads((IN / "risk-ratings.json").read_text())
-    plan = json.loads((OUT / "audit-plan.json").read_text()) if (OUT / "audit-plan.json").exists() else {}
+    rules = [r["rule_id"] for r in json.loads((IN / "rules.json").read_text(encoding="utf-8"))["rules"]]
+    ratings = json.loads((IN / "risk-ratings.json").read_text(encoding="utf-8"))
+    plan = json.loads((OUT / "audit-plan.json").read_text(encoding="utf-8")) if (OUT / "audit-plan.json").exists() else {}
     register = (IN / "risk-register.md").read_text(encoding="utf-8") if (IN / "risk-register.md").exists() else ""
     comments = (IN / "auditor-comments.md").read_text(encoding="utf-8") if (IN / "auditor-comments.md").exists() else ""
     memo = (OUT / "planning-memo.md").read_text(encoding="utf-8") if (OUT / "planning-memo.md").exists() else ""

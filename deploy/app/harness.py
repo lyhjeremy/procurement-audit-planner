@@ -5,7 +5,7 @@ The harness owns orchestration and the two human gates. The model work happens
 inside Claude Code sessions that load the project's own files, so the skills
 and agents are the same files a person would use in VS Code.
 """
-import asyncio, datetime, json, os, re, shutil, time, uuid
+import asyncio, datetime, json, os, re, shutil, subprocess, sys, time, uuid
 from pathlib import Path
 
 from claude_agent_sdk import (AgentDefinition, AssistantMessage, ClaudeAgentOptions, ClaudeSDKClient, ResultMessage, TextBlock,
@@ -18,6 +18,7 @@ STAGE_BUDGET = float(os.environ.get("STAGE_BUDGET_USD", "6"))
 STAGE_MINUTES = int(os.environ.get("STAGE_MINUTES", "45"))
 NUDGES = int(os.environ.get("STAGE_NUDGES", "4"))
 QUIET_SECONDS = int(os.environ.get("QUIET_SECONDS", "60"))
+SECRETS: list[str] = [v for v in (os.environ.get("ANTHROPIC_API_KEY"),) if v]  # main.py adds the passcode
 
 # Stage prompts are the guide's own prompts, with the parallel analysts joined into one stage.
 STAGES = [
@@ -42,7 +43,8 @@ STAGES = [
      "prompt": ("Run the risk-assessor again (Agent tool, subagent_type risk-assessor). "
                 "Apply the decisions in outputs/auditor-comments.md and mark the register as a revision. "
                 "Then run `.venv/bin/python .claude/skills/audit-program/build_pack.py --gate` and report its output."),
-     "produces": ["outputs/risk-register.md"]},
+     "produces": ["outputs/risk-register.md"],
+     "verify": [".claude/skills/audit-program/build_pack.py", "--gate"]},
     {"id": "team", "title": "Plan, challenge and check", "kind": "Agent team", "who": "planner, challenger, qa-reviewer",
      "prompt": ("Run the agent team for the audit planning pack, following the lead procedure in CLAUDE.md. "
                 "This session is headless, so teammates run as named sub-agents: launch planner, challenger and "
@@ -53,7 +55,8 @@ STAGES = [
                 "and the QA checks without relaying for them. When you have PLANNER DONE, CHALLENGER DONE and QA DONE, "
                 "stop them and report for sign-off as CLAUDE.md says, in under 300 words."),
      "produces": ["outputs/planning-memo.md", "outputs/risk-control-matrix.md", "outputs/audit-program.md",
-                  "outputs/challenges.md", "outputs/review.md"]},
+                  "outputs/challenges.md", "outputs/review.md"],
+     "verify": ["scripts/checks/run_checks.py"]},
     {"id": "signoff", "title": "Sign-off", "kind": "Human gate", "who": "you",
      "human": True, "produces": ["outputs/review.md"]},
 ]
@@ -83,11 +86,11 @@ class Run:
 
     # ---- state
     def state(self) -> dict:
-        return json.loads(self.state_path.read_text())
+        return json.loads(self.state_path.read_text(encoding="utf-8"))
 
     def save(self, st: dict):
         tmp = self.state_path.with_suffix(".tmp")
-        tmp.write_text(json.dumps(st, indent=1))
+        tmp.write_text(json.dumps(st, indent=1), encoding="utf-8")
         tmp.replace(self.state_path)
 
     def update(self, **kw):
@@ -102,8 +105,9 @@ class Run:
         self.save(st)
 
     def event(self, **ev):
+        ev = {k: redact(v) if isinstance(v, str) else v for k, v in ev.items()}
         ev.setdefault("t", now())
-        with self.events_path.open("a") as f:
+        with self.events_path.open("a", encoding="utf-8") as f:
             f.write(json.dumps(ev) + "\n")
 
     # ---- creation
@@ -199,10 +203,18 @@ async def run_stage(run: Run, stage: dict):
     def missing():
         return [p for p in stage["produces"] if not (run.ws / p).exists()]
 
+    checked = {}  # result count -> (passed, output) of the stage's verify command
+
+    def verified():
+        if state["results"] not in checked:
+            checked[state["results"]] = verify_stage(run, stage)
+        return checked[state["results"]]
+
     # The client stays connected for the whole stage, so background sub-agents keep
     # working between the lead's turns. If the lead ends a turn while required files
-    # are still missing, the harness waits for quiet and then nudges it (at most
-    # NUDGES times, within STAGE_MINUTES).
+    # are still missing, or the stage's verify command (run by the harness, not the
+    # model) fails, the harness waits for quiet and then nudges it (at most NUDGES
+    # times, within STAGE_MINUTES).
     try:
         async with ClaudeSDKClient(options=opts) as client:
             reader = asyncio.create_task(_drain(client, handle))
@@ -218,7 +230,10 @@ async def run_stage(run: Run, stage: dict):
                         run.event(kind="error", stage=sid, text=f"Stage time limit of {STAGE_MINUTES} minutes reached.")
                         break
                     continue
-                if r.is_error or not missing():
+                if r.is_error:
+                    break
+                miss = missing()
+                if not miss and verified()[0]:
                     break
                 if nudges >= NUDGES or time.time() - t0 > STAGE_MINUTES * 60:
                     break
@@ -226,7 +241,7 @@ async def run_stage(run: Run, stage: dict):
                     continue  # teammates are still active; give them time
                 seen = state["results"]
                 nudges += 1
-                text = nudge_text(sid, missing())
+                text = nudge_text(sid, miss, None if miss else verified()[1])
                 run.event(kind="prompt", stage=sid, text=f"Harness status check {nudges}: {text}")
                 await client.query(text)
             reader.cancel()
@@ -238,16 +253,48 @@ async def run_stage(run: Run, stage: dict):
     st["cost_usd"] = round(st.get("cost_usd", 0) + cost, 4)
     run.save(st)
     miss = missing()
-    ok = result is not None and not result.is_error and not miss
+    passed, vout = verify_stage(run, stage) if not miss else (False, "")
+    ok = result is not None and not result.is_error and not miss and passed
     run.set_stage(sid, status="done" if ok else "failed", finished=now(), seconds=round(time.time() - t0),
                   cost_usd=round(cost, 4), turns=getattr(result, "num_turns", None),
-                  result=(getattr(result, "result", "") or "")[:6000], missing=miss)
+                  result=(getattr(result, "result", "") or "")[:6000], missing=miss, verify=vout[-3000:])
     run.event(kind="result", stage=sid, ok=ok, text=(getattr(result, "result", "") or "")[:6000],
               cost_usd=round(cost, 4), seconds=round(time.time() - t0))
+    if stage.get("verify") and not miss:
+        run.event(kind="verify", stage=sid, ok=passed, text=f"$ {' '.join(stage['verify'])}\n{vout[-3000:]}")
     if not ok:
-        why = f"missing {', '.join(miss)}" if miss else (getattr(result, "subtype", None) or "no result")
+        if miss:
+            why = f"missing {', '.join(miss)}"
+        elif result is None or result.is_error:
+            why = getattr(result, "subtype", None) or "no result"
+        else:
+            why = f"{' '.join(stage['verify'])} did not pass" + (
+                "; the pack goes back to the team (retry), never to the auditor" if sid == "team" else "")
         run.update(status="failed", error=f"{stage['title']} failed: {why}")
     return ok
+
+
+def project_python(ws: Path) -> str:
+    for p in (ws / ".venv" / "bin" / "python", ws / ".venv" / "Scripts" / "python.exe"):
+        if p.exists():
+            return str(p)
+    return sys.executable
+
+
+def verify_stage(run: Run, stage: dict) -> tuple[bool, str]:
+    """Run the stage's own check script in the workspace. The model's word that a
+    stage worked is not enough: the gate must be closed after the revision, and the
+    QA checks must pass before a pack reaches the auditor."""
+    cmd = stage.get("verify")
+    if not cmd:
+        return True, ""
+    try:
+        p = subprocess.run([project_python(run.ws), *cmd], cwd=run.ws, capture_output=True, encoding="utf-8",
+                           errors="replace", timeout=900, env={**os.environ, "PYTHONIOENCODING": "utf-8"})
+    except subprocess.TimeoutExpired:
+        return False, f"{' '.join(cmd)} timed out"
+    out = redact((p.stdout + p.stderr).strip())
+    return p.returncode == 0, out
 
 
 async def _drain(client, handle):
@@ -255,7 +302,16 @@ async def _drain(client, handle):
         handle(msg)
 
 
-def nudge_text(sid, miss):
+def nudge_text(sid, miss, failed_check=None):
+    if failed_check is not None:
+        tail = "\n".join(failed_check.splitlines()[-15:])
+        if sid == "team":
+            return ("Status check from the harness: the QA checks (scripts/checks/run_checks.py) do not pass in this "
+                    "workspace, so the pack cannot go to the auditor. BLOCKED means the pack goes back to the team: send "
+                    "the failures to the planner, have it rebuild and announce the new version, and have the qa-reviewer "
+                    "re-run the checks and rewrite outputs/review.md. Last lines of the check:\n" + tail)
+        return ("Status check from the harness: this stage's check does not pass yet. Fix the cause and report. "
+                "Last lines of the check:\n" + tail)
     if sid == "team":
         return ("Status check from the harness: outputs/review.md does not exist yet, so the team has not finished. "
                 "Check on the teammates by name with SendMessage. If the challenger has sent CHALLENGER DONE, tell the "
@@ -326,6 +382,34 @@ async def resume(run: Run):
             run.event(kind="gate", text="Pack ready. Waiting for the auditor's sign-off.")
 
 
+async def return_to_team(run: Run, comment: str):
+    """The auditor returned the pack: the team works again, with the auditor's comment.
+
+    The returned review.md (with its decision recorded) is kept beside the new one,
+    so the team must write a fresh review.md before the pack comes back for sign-off."""
+    out = run.ws / "outputs"
+    n = len(list(out.glob("review-returned-*.md"))) + 1
+    (out / "review.md").replace(out / f"review-returned-{n}.md")
+    run.set_stage("signoff", status="pending")
+    run.update(status="running", current="team")
+    run.event(kind="run", text=f"Pack returned to the team (round {n}); the returned review is kept as review-returned-{n}.md.")
+    stage = dict(next(s for s in STAGES if s["id"] == "team"))
+    stage["prompt"] += (f" The auditor returned the previous pack to the team with this comment: \"{clean(comment)}\". "
+                        f"The returned review is outputs/review-returned-{n}.md. Have the team address the comment, "
+                        "rebuild the pack and write a new outputs/review.md.")
+    if await run_stage(run, stage):
+        run.set_stage("signoff", status="waiting")
+        run.update(status="awaiting_signoff", current="signoff")
+        run.event(kind="gate", text="Revised pack ready. Waiting for the auditor's sign-off.")
+
+
+def note_rerun(run: Run, why: str):
+    """Retries and returns spend credit like a new run, so they count against the daily cap."""
+    st = run.state()
+    st.setdefault("reruns", []).append({"t": now(), "why": why})
+    run.save(st)
+
+
 # ---- the two human gates are written by code, not by the model
 
 def register_rows(ws: Path):
@@ -384,3 +468,15 @@ def write_signoff(run: Run, name: str, decision: str, comment: str):
 
 def clean(s: str) -> str:
     return re.sub(r"[|\r\n]+", " ", str(s or "")).strip()[:500]
+
+
+KEY_RE = re.compile(r"sk-ant-[A-Za-z0-9_-]{8,}")
+
+
+def redact(s: str) -> str:
+    """Keep secrets out of the public event log and file viewer. Agent Bash shares the
+    server's environment (the CLI needs the API key), so anything it prints is scrubbed."""
+    for v in SECRETS:
+        if v and len(v) >= 6:
+            s = s.replace(v, "[redacted]")
+    return KEY_RE.sub("[redacted]", s)

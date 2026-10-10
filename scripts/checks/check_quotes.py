@@ -7,7 +7,7 @@
    ("- [rule:CPR-xx] clause ... : "...") is the start of that rule's quote.
 Prints PASS/FAIL lines and a summary; exit 0 when clean.
 """
-import json, re, subprocess, sys
+import json, os, re, subprocess, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -26,12 +26,12 @@ def main():
     if not VERIFIER.exists():
         fails.append(f"verifier missing: {VERIFIER}")
     else:
-        p = subprocess.run([sys.executable, str(VERIFIER), str(RULES), str(PDF)], capture_output=True, text=True)
-        last = (p.stdout.strip().splitlines() or ["(no output)"])[-1]
+        p = subprocess.run([sys.executable, str(VERIFIER), str(RULES), str(PDF)], capture_output=True, encoding="utf-8", env={**os.environ, "PYTHONIOENCODING": "utf-8"})
+        last = (p.stdout.strip().splitlines() or p.stderr.strip().splitlines() or ["(no output)"])[-1]
         print(f"verify_quotes.py: exit {p.returncode}: {last}")
         if p.returncode != 0:
             fails.append("verify_quotes.py reported failures: " + last)
-    rules = {r["rule_id"]: r for r in json.loads(RULES.read_text())["rules"]}
+    rules = {r["rule_id"]: r for r in json.loads(RULES.read_text(encoding="utf-8"))["rules"]}
     n_excerpts = 0
     if REGISTER.exists():
         for m in re.finditer(r'^- \[rule:(CPR-\d+)\] clause [^:]+: "(.*?)(…?)"\s*$', REGISTER.read_text(encoding="utf-8"), re.M):

@@ -100,7 +100,8 @@ Writes `outputs/analytics-full/spend-clean.csv`, `spend-excluded.csv`,
 whose first cell is `Service`, re-read with that header. Assert the columns
 are exactly `Service, Expenditure category, Narrative, Date, Net amount,
 Supplier name`. Add `source_file`, `row_id`, `pay_date` (calendar date).
-Parse text dates with `dayfirst=False`. Assert no null date, amount or
+Parse text dates with the explicit month-first formats `%m/%d/%y` or
+`%m/%d/%Y` (never `pd.to_datetime` without a format: that auto-detects). Assert no null date, amount or
 supplier, and no negative amounts (log if any exist and stop). Record
 `months_covered` as the number of distinct calendar months in `pay_date`.
 
