@@ -40,7 +40,7 @@ The register lists 9 rated risks. The auditor recorded 10 decisions by Jeremy Le
 The Rules were converted into testable rules with clause references. Python scripts then tested the full payment population against them for threshold clustering, split purchases, spend with no matching notice, repeated payments, spend after a notice ended and spend above the award rate. Past audit opinions and the council's risk scoring method came from the Governance Committee papers.
 Each risk was rated on the council's likelihood and impact scale with every rating citing a rule, a metric or a prior audit, and the auditor approved the scope at the gate. For each approved risk this pack names the control the Rules require, a test step and a targeted sample. Samples are drawn by script from the flagged lists rather than at random, sized at ten items for risks scoring nine or more and five otherwise, and every sampled transaction is traced to its row in the published workbooks.
 
-The programme holds 12 expected controls and 24 test steps, with 289 sampled transactions worth £21,747,431.89, each traceable to its row in the council's published workbooks (see `audit-program.md` and `outputs/samples/`).
+The programme holds 12 expected controls and 24 test steps, with 289 sample rows covering 268 distinct transactions worth £20,673,483.95 (a transaction drawn by more than one test is counted once), each traceable to its row in the council's published workbooks (see `audit-program.md` and `outputs/samples/`).
 
 ## Rules coverage
 

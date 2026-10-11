@@ -4,7 +4,7 @@
 
 **Indicators, not findings.** Every test below checks a control against a pattern in public data. Nothing here asserts wrongdoing by the council, a department, an officer or a supplier.
 
-9 risks in scope, 12 controls, 24 tests, 289 sampled transactions. Samples are drawn by the builder from `analytics-full/` by the recipe stated under each test, and every transaction is listed with its workbook row.
+9 risks in scope, 12 controls, 24 tests, 289 sample rows (268 distinct transactions). Samples are drawn by the builder from `analytics-full/` by the recipe stated under each test, and every transaction is listed with its workbook row.
 
 
 ## R-01: Quotes not sought for payments just below the quotation thresholds [6 (Moderate; Moderate)]

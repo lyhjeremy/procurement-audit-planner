@@ -210,6 +210,7 @@
    "scope_reason": "Adverse audit on the theme and the largest tagged spend population.",
    "uplift": {
     "cites": "history:AUD-16",
+    "base_score": 2,
     "justification": "Personal Budgets (Direct Payments) received Limited Assurance in the latest completed-work appendix [history:AUD-16]; direct payments fall within this theme of care purchased outside the Rules, so likelihood is raised by one point."
    },
    "override": null,

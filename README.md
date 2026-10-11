@@ -119,7 +119,7 @@ sub-agents 3.1 to 3.7, the human gate 4.1 to 4.3 and agent teams 5.1 to 5.8.
 and the file that shows it, and the guide's prompts are saved in
 `docs/guide-prompts/`.
 
-Four things differ from a plain run of the guide, and the step list says so.
+Five things differ from a plain run of the guide, and the step list says so.
 The `risk-assessment` skill (step 3.5) has no finished file in the guide, so
 we wrote it from the guide's prompt. The step 1.2 follow-up question was
 asked during the final review rather than straight after step 1.2
@@ -130,6 +130,22 @@ interactive agent-team mode needs an interactive terminal; in the session we
 used, the three team agents ran as background agents from their files and
 messaged each other directly with SendMessage, the same way the deployed
 harness runs them ([docs/team-messages.md](docs/team-messages.md)).
+
+The fifth is a later fix. After the run, a teammate (Emmet Andrews) reviewed
+the repo and edited some of the files we had copied from the guide:
+`verify_quotes.py`, `verify_history.py`, `build_pack.py`, the audit-program
+skill, the four QA check scripts and one line each in the spend-analyst and
+qa-reviewer agent files. The edits read and write every file as UTF-8 and
+require poppler's `pdftotext`, so the checks also run on Windows; make the
+builder count distinct sampled payments (289 sample rows cover 268 distinct
+payments, because 21 payments are drawn by two tests); and make the QA number
+check recompute every count and risk score from the source files instead of
+trusting the builder's own `pack-figures.json`. He also tightened our own
+register builder (an uplift must add exactly one point to a stated
+`base_score`, and an amendment that changes nothing fails). The register and
+pack were rebuilt with the edited files on 2026-10-11: no rating, test or
+sample changed, only the memo's sample sentence. The full list is in
+[docs/guide-steps.md](docs/guide-steps.md#later-edits-to-copied-files).
 
 ## Auditor judgment and reflection
 
@@ -156,6 +172,14 @@ agency-staff supplier with no live contract notice. Agency staff is a bought
 service. Premises costs (rent, rates, leases) stay out because they are
 property costs, not purchases under the Rules, and the register now says so.
 R-04's rating did not move (3 x 5 = 15).
+
+R-09 uplift confirmed (2026-10-11). The stricter register builder warns that
+R-09's likelihood uplift (2 to 3, score 12) rests on one first-time adverse
+opinion rather than a repeat finding, and leaves the call to the auditor. We
+keep it: AUD-16 is a Limited Assurance opinion on Personal Budgets (Direct
+Payments), the same service R-09 tests, and the pack already samples the
+children's direct payments that audit covered (T-09.3). The register records
+the base score of 2 and the builder's one warning stands, by design.
 
 ### Sign-off
 
@@ -212,9 +236,14 @@ laptop:
   deployed system is the Part A system, not a rewrite.
 - The pages show each stage live: which agent is working, its commands, the
   sub-agents it starts and the messages between team members.
-- Both human gates are forms. The decision form writes `auditor-comments.md`;
-  the sign-off form fills the sign-off block in `review.md`, and only when the
-  QA verdict is READY FOR SIGN-OFF.
+- Both human gates are forms. The decision form writes `auditor-comments.md`
+  and preselects nothing, so every risk needs a decision. The sign-off form
+  fills the sign-off block in `review.md`.
+- The server runs the checks itself rather than taking the model's word for
+  them: after the revision it runs `build_pack.py --gate`, and after the team it
+  runs `scripts/checks/run_checks.py`. A pack that fails QA goes back to the team
+  and never reaches the auditor, and signing off re-runs the four checks first.
+  Returning a pack to the team, with a comment, re-runs the team stage on it.
 - Starting a run and the two gates need the team passcode, runs are capped
   per day, and each stage has a spending cap, because every run spends API
   credit. The Part A run is shown read-only as the reference run, so the site

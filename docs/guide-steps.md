@@ -12,7 +12,8 @@ ran each skill and sub-agent by starting a sub-agent that read the project's
 own `CLAUDE.md` and the skill or agent file, and followed it. Where the guide
 offers "copy the finished file" or "ask Claude to write it", we copied the
 finished file; the one step with no finished file (3.5) was written from the
-guide's prompt.
+guide's prompt. Some copied files were edited later by a teammate; see
+[Later edits to copied files](#later-edits-to-copied-files) at the end.
 
 ## Setup
 
@@ -75,6 +76,31 @@ and gave each the other two addresses; from then on they messaged each other
 directly with SendMessage, as the deployed harness (Part B) does. Starting a
 separate interactive session for true teammates was blocked by Claude Code's
 permission check. The protocol (PACK READY, CHALLENGE, RESPONSE, QA FAIL, DONE)
-and the agent files are exactly the guide's. Every message is in
+and the planner and challenger files are exactly the guide's (the
+qa-reviewer file differs by one line, listed below). Every message is in
 `docs/team-messages.md`. In the first run (2026-10-06) the lead delivered the
 messages instead; that log is in the file's git history.
+
+## Later edits to copied files
+
+On 2026-10-10 a teammate (Emmet Andrews) reviewed the repo and changed some of
+the files copied from the guide (commit c46c003). We tested the change with a
+full run of the harness on a laptop on 2026-10-11, then rebuilt the register
+and the pack with it. No rating, test or sample changed; the planning memo's
+sample sentence now reads "289 sample rows covering 268 distinct
+transactions", because 21 payments are drawn by two tests.
+
+| File (step) | Edit |
+|---|---|
+| `extract-rules/verify_quotes.py` (2.1), `scripts/verify_history.py` (3.3) | Require poppler's `pdftotext` (or `$PDFTOTEXT`) and stop with a clear message on another one, such as the xpdf copy Git for Windows installs; read text as UTF-8. `verify_quotes.py` no longer falls back to `pypdf` |
+| `agents/spend-analyst.md` (3.1) | One line: parse text dates with explicit month-first formats instead of letting pandas guess |
+| `audit-program/build_pack.py`, `SKILL.md` (5.3) | Report sample rows and distinct sampled transactions separately, with the £ value of the distinct ones; read files as UTF-8 |
+| `agents/qa-reviewer.md`, `scripts/checks/` (5.6) | The number check recomputes the builder's counts and every risk score from the register, decisions, plan, rules and sample files, and checks each filled placeholder word for word, instead of trusting `pack-figures.json`. All checks read text as UTF-8 |
+
+Our own files changed too: `build_register.py` and the risk-assessment skill
+(3.5) now check that an uplift adds exactly one point to a stated
+`base_score`, warn when the uplift rests on one first-time adverse opinion,
+and fail an amendment that changes nothing; the spend scripts read and write
+UTF-8. Under the new builder, register revision 2 rebuilds with one warning
+(R-09's uplift, which the auditor confirmed on 2026-10-11; see the README),
+where step 4.3 above records `warnings: 0` under the old builder.
