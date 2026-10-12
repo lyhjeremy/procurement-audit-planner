@@ -272,8 +272,7 @@ real work, including two returns to the team.
   3 pack versions and 8 challenges, all resolved; the server's QA run passed 4
   of 4 checks (9 risks in scope, 9 controls, 18 tests, 254 sample rows covering
   239 distinct transactions). Signed off by Mia the same day.
-- **Live Run 4** (11 to 12 Oct 2026, $5.21, run `20261011-233644-32a8`, shown
-  without a label in the run picker): Mia was the auditor. At the gate she
+- **Live Run 4** (11 to 12 Oct 2026, $5.21, run `20261011-233644-32a8`): Mia was the auditor. At the gate she
   approved 7 risks, amended R-03 (add clause 1.6.2, which treats a grant to an
   external organisation as a contract, as a rule and bring grant recipients
   with no notice into the risk, keeping premises costs out) and rejected R-08.
