@@ -249,8 +249,9 @@ laptop:
   credit. The Part A run is shown read-only as the reference run, so the site
   shows the complete workflow at any time.
 
-The site holds two complete live runs made by the deployed harness itself, both
-signed off:
+The site holds four complete live runs made by the deployed harness itself, all
+signed off. Live Run 4 is the one to look at first: it shows both gates doing
+real work, including two returns to the team.
 
 - **Live Run 1** (6 to 7 Oct 2026, $4.45): all seven stages. Its team stage first
   stopped early (the lead ended its session while teammates were finishing); the
@@ -263,6 +264,43 @@ signed off:
   covered by the off-contract tests). The team then went through 3 pack
   versions and 10 challenges, all resolved; QA passed 4 of 4 checks; signed
   off the same day.
+- **Live Run 3** (11 Oct 2026, $2.86, run `20261011-165750-1ef9`): the first run
+  after Emmet Andrews' fixes, with the server running the checks. At the gate
+  Jeremy Lee approved 9 of 10 risks and amended 1 (lowered the likelihood of
+  the no-notice risk from 4 to 3, since the notice export is not a contract
+  register). The server's `build_pack.py --gate` passed; the team went through
+  3 pack versions and 8 challenges, all resolved; the server's QA run passed 4
+  of 4 checks (9 risks in scope, 9 controls, 18 tests, 254 sample rows covering
+  239 distinct transactions). Signed off by Mia the same day.
+- **Live Run 4** (11 to 12 Oct 2026, $5.21, run `20261011-233644-32a8`, shown
+  without a label in the run picker): Mia was the auditor. At the gate she
+  approved 7 risks, amended R-03 (add clause 1.6.2, which treats a grant to an
+  external organisation as a contract, as a rule and bring grant recipients
+  with no notice into the risk, keeping premises costs out) and rejected R-08.
+  She then returned the pack to the team twice. The first return asked the
+  team to cite the quote-threshold rules (CPR-30, CPR-31) in place of rules
+  that apply above the statutory threshold, which is null in the extracted
+  rules. The second return caught the same problem in two more citations,
+  corrected a band description and asked for school (DSG) funding to be
+  handled apart from the drawn grant sample. Each return kept the earlier QA
+  review (`review-returned-1.md`, `review-returned-2.md`), and QA confirmed the
+  comment was handled before the pack came back. Final pack: 8 risks in scope,
+  40 rules (clause 1.6.2 added as CPR-40), 10 controls, 18 tests, 310 sample
+  rows covering 292 distinct transactions; QA 4 of 4. Signed off by Mia.
+
+Live Run 4 also shows three limits of the harness, all visible in its files:
+
+- A return re-runs the team stage only, not the risk-assessor, so the risk
+  register's R-03 text still cites CPR-05/CPR-08 and calls clause 1.6.2 not
+  extracted. The memo's Limitations section says so and that the register
+  needs re-issuing.
+- R-08 was marked reject, but Mia's comment asks for a narrower test of awards
+  over £500,000. The gate form records one decision word per risk, so the memo
+  flags the conflict for the auditor; she signed off without settling it.
+- The rules stage found and reused a `gen.py` script that Live Run 3 had left
+  in the machine's temporary folder. Its output still passed the quote check
+  against the PDF, but the stage was not fully independent of the earlier
+  run. Clearing the temporary folder at the start of each run would fix it.
 
 Details and deployment steps are in [deploy/README.md](deploy/README.md).
 
